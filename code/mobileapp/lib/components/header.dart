@@ -18,7 +18,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: bgColor ?? Colors.grey[50],
       leading: IconButton(
         icon: Icon(
-          Icons.arrow_back_ios,
+          Icons.arrow_back_ios_new_rounded,
           color: Color(titleColor ?? 0xFF3855a2),
           weight: 0.9,
         ),
