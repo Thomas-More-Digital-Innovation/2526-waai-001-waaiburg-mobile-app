@@ -47,13 +47,12 @@ class _NewsState extends State<News> {
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
       appBar: Header(
-        bgcolor: Colors.transparent,
+        bgColor: Colors.transparent,
         titleColor: 0xFFFFFFFF,
         title: FutureBuilder<List<Section>>(
           future: futureSection,
           builder: (context, snapshot) {
-            if (snapshot.hasData &&
-                snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
               return Text(snapshot.data!.firstWhere((i) => i.id == 3).name);
             }
             // show a loading spinner
@@ -68,8 +67,7 @@ class _NewsState extends State<News> {
         child: FutureBuilder<List<dynamic>>(
           future: futureNews,
           builder: (context, snapshot) {
-            if (snapshot.hasData &&
-                snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
               return ListView(
                 children: snapshot.data!.asMap().entries.map((info) {
                   return ListCard(
@@ -99,8 +97,7 @@ class _NewsState extends State<News> {
     Color(0xFF46ae93),
   ];
 
-  GestureDetector buildButtonColumn(
-      Color color, String label, int infoId, String pageRoute) {
+  GestureDetector buildButtonColumn(Color color, String label, int infoId, String pageRoute) {
     final double width = MediaQuery.of(context).size.width;
     return GestureDetector(
       onTap: () {

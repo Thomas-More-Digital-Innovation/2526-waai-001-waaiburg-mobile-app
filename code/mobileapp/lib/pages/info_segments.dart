@@ -32,11 +32,8 @@ class _InfoSegmentsState extends State<InfoSegments> {
         title: FutureBuilder<List<Section>>(
           future: futureSection,
           builder: (context, snapshot) {
-            if (snapshot.hasData &&
-                snapshot.connectionState == ConnectionState.done) {
-              return Text(snapshot.data!
-                  .firstWhere((i) => i.id == arg["sectionId"])
-                  .name);
+            if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
+              return Text(snapshot.data!.firstWhere((i) => i.id == arg["sectionId"]).name);
             }
             // show a loading spinner
             else {
@@ -48,17 +45,12 @@ class _InfoSegmentsState extends State<InfoSegments> {
       body: FutureBuilder<List<InfoSegment>>(
         future: futureInfoSegments,
         builder: (context, snapshot) {
-          if (snapshot.hasData &&
-              snapshot.connectionState == ConnectionState.done) {
-            return ListButtons(
-                list: snapshot.data!
-                    .where((i) => i.sectionId == arg["sectionId"])
-                    .toList(),
-                route: '/infocontent');
+          if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
+            return ListButtons(list: snapshot.data!.where((i) => i.sectionId == arg["sectionId"]).toList(), route: '/infocontent');
           }
-          // show a loading spinnersnapshot.data!.where((i) => i.sectionId == 1).toList());
+          // show a loading spinner
           else {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),

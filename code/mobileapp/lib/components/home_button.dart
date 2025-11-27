@@ -54,16 +54,18 @@ class HomeButton extends StatelessWidget {
                 color: iconColor,
                 size: 82,
               ),
-              const SizedBox(height: 15), // padding tussen icon en tekst
-              Text(
-                name,
-                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white, shadows: [
-                  const Shadow(
-                    blurRadius: 5,
-                    color: Colors.black45,
-                    offset: Offset(0, 2),
-                  )
-                ]),
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Text(
+                  name,
+                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white, shadows: [
+                    const Shadow(
+                      blurRadius: 5,
+                      color: Colors.black45,
+                      offset: Offset(0, 2),
+                    )
+                  ]),
+                ),
               ),
             ],
           ),

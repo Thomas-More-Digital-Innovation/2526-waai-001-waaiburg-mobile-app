@@ -48,6 +48,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
+    final double logoVerticalOffset = screenHeight * 0.01;
 
     return Scaffold(
         body: Container(
@@ -57,10 +58,8 @@ class _HomeState extends State<Home> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      margin: EdgeInsets.only(
-                          top: screenHeight * 0.01,
-                          bottom: screenHeight * 0.01),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: logoVerticalOffset),
                       child: Center(
                         child: SvgPicture.asset(
                           'assets/WAAIBURG_DEFINITIEF_vector_RGB_Tekengebied 1-01.svg',
@@ -118,8 +117,6 @@ class _HomeState extends State<Home> {
                                 sectionId: 1,
                                 route: "/treehome",
                               ),
-                            ],
-                            if (userLoggedIn) ...[
                               const HomeButton(
                                 name: "GEGEVENS",
                                 icon: FontAwesomeIcons.user,
@@ -136,31 +133,22 @@ class _HomeState extends State<Home> {
                       width: screenHeight,
                       child: GestureDetector(
                           onTap: () {
-                            userLoggedIn
-                                ? logOut()
-                                : Navigator.pushNamed(context, '/login');
+                            userLoggedIn ? logOut() : Navigator.pushNamed(context, '/login');
                           },
                           child: Container(
                             margin: const EdgeInsets.all(5.0),
                             padding: const EdgeInsets.all(18.0),
-                            decoration: BoxDecoration(
-                                color: Colors.white.withAlpha(64),
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(30))),
+                            decoration: BoxDecoration(color: Colors.white.withAlpha(64), borderRadius: const BorderRadius.all(Radius.circular(30))),
                             child: Text(
                               userLoggedIn ? 'Uitloggen' : 'Inloggen',
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 5,
-                                      color: Colors.black45,
-                                      offset: Offset(0, 2),
-                                    )
-                                  ]),
+                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white, shadows: [
+                                Shadow(
+                                  blurRadius: 5,
+                                  color: Colors.black45,
+                                  offset: Offset(0, 2),
+                                )
+                              ]),
                             ),
                           )),
                     ),

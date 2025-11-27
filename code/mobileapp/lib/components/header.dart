@@ -5,9 +5,9 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(55);
 
   final Widget title;
-  final Color? bgcolor;
+  final Color? bgColor;
   final int? titleColor;
-  const Header({required this.title, this.bgcolor, this.titleColor, super.key});
+  const Header({required this.title, this.bgColor, this.titleColor, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
       title: title,
       centerTitle: true,
       elevation: 0,
-      backgroundColor: bgcolor ?? Colors.grey[50],
+      backgroundColor: bgColor ?? Colors.grey[50],
       leading: IconButton(
         icon: Icon(
           Icons.arrow_back_ios,
@@ -25,10 +25,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
         iconSize: 35,
         onPressed: () => Navigator.of(context).pop(),
       ),
-      titleTextStyle: TextStyle(
-          fontWeight: FontWeight.w600,
-          color: Color(titleColor ?? 0xFF3855a2),
-          fontSize: 32),
+      titleTextStyle: TextStyle(fontWeight: FontWeight.w600, color: Color(titleColor ?? 0xFF3855a2), fontSize: 32),
     );
   }
 }

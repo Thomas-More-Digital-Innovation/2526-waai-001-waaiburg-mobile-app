@@ -38,7 +38,7 @@ class _UserDetailsState extends State<UserDetails> {
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
       appBar: const Header(
-        bgcolor: Color(0xFF46ae93),
+        bgColor: Color(0xFF46ae93),
         titleColor: 0xFFFFFFFF,
         title: Text("Contactgegevens"),
       ),
@@ -52,8 +52,7 @@ class _UserDetailsState extends State<UserDetails> {
               child: FutureBuilder<List<dynamic>>(
                 future: futureUser,
                 builder: (context, snapshot) {
-                  if (snapshot.hasData &&
-                      snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
                     User user = snapshot.data![0];
                     User? mentor = snapshot.data![1];
                     return Column(
@@ -67,8 +66,7 @@ class _UserDetailsState extends State<UserDetails> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  launchUrlString(
-                                      "https://www.dewaaiburgapp.eu/user");
+                                  launchUrlString("https://www.dewaaiburgapp.eu/user");
                                 },
                                 child: const Text(
                                   "Gegevens aanpassen",
@@ -82,9 +80,7 @@ class _UserDetailsState extends State<UserDetails> {
                             ],
                           ),
                         ),
-                        mentor != null
-                            ? _buildUserDetailsBox(mentor, "Begeleider")
-                            : _buildNoMentorBox(),
+                        mentor != null ? _buildUserDetailsBox(mentor, "Begeleider") : _buildNoMentorBox(),
                       ],
                     );
                   } else {
@@ -174,11 +170,7 @@ class _UserDetailsState extends State<UserDetails> {
 }
 
 String getAddress(User? user) {
-  if (user != null &&
-      user.street != null &&
-      user.houseNumber != null &&
-      user.zipcode != null &&
-      user.city != null) {
+  if (user != null && user.street != null && user.houseNumber != null && user.zipcode != null && user.city != null) {
     return '${user.street} ${user.houseNumber},\n${user.zipcode} ${user.city}';
   } else {
     return 'Adresgegevens ontbreken';
@@ -189,8 +181,7 @@ class UserDetailsItemLabel extends StatelessWidget {
   final String label;
   final String value;
 
-  const UserDetailsItemLabel(this.label, this.value, {Key? key})
-      : super(key: key);
+  const UserDetailsItemLabel(this.label, this.value, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
