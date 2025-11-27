@@ -34,6 +34,7 @@ class _NewsState extends State<News> {
 
   Future<void> _refreshNews() async {
     setState(() {
+      sections = fetchSections();
       futureInfoSegments = fetchInfoSegments();
       futureInfoContent = fetchInfoContents();
       futureNews = fetchNews(3);

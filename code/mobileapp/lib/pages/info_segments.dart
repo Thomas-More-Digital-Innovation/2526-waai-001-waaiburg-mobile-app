@@ -14,6 +14,13 @@ class InfoSegments extends StatefulWidget {
 }
 
 class _InfoSegmentsState extends State<InfoSegments> {
+  Future<void> _refreshSegments() async {
+    setState(() {
+      sections = fetchSections();
+      infoSegments = fetchInfoSegments();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final arg = ModalRoute.of(context)!.settings.arguments as Map;
@@ -33,17 +40,20 @@ class _InfoSegmentsState extends State<InfoSegments> {
           },
         ),
       ),
-      body: FutureBuilder<List<InfoSegment>>(
-        future: infoSegments,
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
-            return ListButtons(list: snapshot.data!.where((i) => i.sectionId == arg["sectionId"]).toList(), route: '/infocontent');
-          }
-          // show a loading spinner
-          else {
-            return const PageContentProgressIndicator();
-          }
-        },
+      body: RefreshIndicator(
+        onRefresh: _refreshSegments,
+        child: FutureBuilder<List<InfoSegment>>(
+          future: infoSegments,
+          builder: (context, snapshot) {
+            if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
+              return ListButtons(list: snapshot.data!.where((i) => i.sectionId == arg["sectionId"]).toList(), route: '/infocontent');
+            }
+            // show a loading spinner
+            else {
+              return const PageContentProgressIndicator();
+            }
+          },
+        ),
       ),
     );
   }
