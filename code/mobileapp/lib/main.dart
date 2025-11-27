@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/api/cache.dart';
 import 'package:mobileapp/pages/home.dart';
 import 'package:mobileapp/pages/login_page.dart';
 import 'package:mobileapp/pages/info_content_select.dart';
@@ -11,6 +12,7 @@ import 'package:mobileapp/pages/user_details.dart';
 /// The website screen
 /// This screen is a webview
 void main() {
+  cacheData();
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: ThemeData(fontFamily: 'Epilogue'),
