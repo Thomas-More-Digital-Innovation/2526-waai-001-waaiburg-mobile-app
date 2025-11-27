@@ -4,6 +4,7 @@ import 'package:mobileapp/api/info.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileapp/components/list_buttons.dart';
 import 'package:mobileapp/components/header.dart';
+import 'package:mobileapp/components/page_content_progress_indicator.dart';
 
 class InfoContents extends StatefulWidget {
   const InfoContents({super.key});
@@ -32,11 +33,8 @@ class _InfoContentsState extends State<InfoContents> {
         title: FutureBuilder<List<InfoSegment>>(
           future: futureInfoSegments,
           builder: (context, snapshot) {
-            if (snapshot.hasData &&
-                snapshot.connectionState == ConnectionState.done) {
-              return Text(snapshot.data!
-                  .firstWhere((i) => i.id == arg['infoId'])
-                  .title);
+            if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
+              return Text(snapshot.data!.firstWhere((i) => i.id == arg['infoId']).title);
             }
             // show a loading spinner
             else {
@@ -48,17 +46,12 @@ class _InfoContentsState extends State<InfoContents> {
       body: FutureBuilder<List<InfoContent>>(
         future: futureInfoContents,
         builder: (context, snapshot) {
-          if (snapshot.hasData &&
-              snapshot.connectionState == ConnectionState.done) {
-            return ListButtons(
-                list: snapshot.data!
-                    .where((i) => i.infoId == arg['infoId'])
-                    .toList(),
-                route: '/infocontentselect');
+          if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
+            return ListButtons(list: snapshot.data!.where((i) => i.infoId == arg['infoId']).toList(), route: '/infocontentselect');
           }
           // show a loading spinnersnapshot.data!.where((i) => i.sectionId == 1).toList());
           else {
-            return const CircularProgressIndicator();
+            return const PageContentProgressIndicator();
           }
         },
       ),

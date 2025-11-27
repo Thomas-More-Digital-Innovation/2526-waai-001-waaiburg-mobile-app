@@ -370,7 +370,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                   top: 100,
                   left: 30,
                   child: questionsList == null
-                      ? const CircularProgressIndicator()
+                      ? const CircularProgressIndicator() // TODO: Replace with loading indicator
                       : questionsList!.isEmpty
                           ? const Text("Geen actieve vragenlijst gevonden!")
                           : ChatBubble(

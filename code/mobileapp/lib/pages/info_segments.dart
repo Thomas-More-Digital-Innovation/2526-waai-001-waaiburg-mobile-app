@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mobileapp/components/list_buttons.dart';
 import 'package:mobileapp/components/header.dart';
 import 'package:mobileapp/api/cache.dart';
+import 'package:mobileapp/components/page_content_progress_indicator.dart';
 
 class InfoSegments extends StatefulWidget {
   const InfoSegments({super.key});
@@ -40,7 +41,7 @@ class _InfoSegmentsState extends State<InfoSegments> {
           }
           // show a loading spinner
           else {
-            return const Center(child: CircularProgressIndicator());
+            return const PageContentProgressIndicator();
           }
         },
       ),

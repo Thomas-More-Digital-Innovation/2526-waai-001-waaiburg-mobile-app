@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobileapp/api/user.dart';
 import 'package:mobileapp/components/header.dart';
+import 'package:mobileapp/components/page_content_progress_indicator.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class UserDetails extends StatefulWidget {
@@ -84,7 +85,7 @@ class _UserDetailsState extends State<UserDetails> {
                       ],
                     );
                   } else {
-                    return const Center(child: CircularProgressIndicator());
+                    return const PageContentProgressIndicator();
                   }
                 },
               ),
