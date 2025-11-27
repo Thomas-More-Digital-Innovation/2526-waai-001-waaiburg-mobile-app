@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:mobileapp/api/api.dart';
 import 'package:mobileapp/api/question_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -60,8 +61,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
     answersList = questionAnswerList[1];
 
     // Find the index of the first unanswered question
-    int indexOfFirstUnansweredQuestion = questionsList!.indexWhere((question) =>
-        answersList!.every((answer) => answer.questionId != question.id));
+    int indexOfFirstUnansweredQuestion = questionsList!.indexWhere((question) => answersList!.every((answer) => answer.questionId != question.id));
 
     //go to the last filled in question because nicer user experience
     if (indexOfFirstUnansweredQuestion > 0) {
@@ -70,9 +70,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
 
     // Set currentQuestionIndex to the found index, or 0 if no unanswered questions are found
     setState(() {
-      currentQuestionIndex = indexOfFirstUnansweredQuestion >= 0
-          ? indexOfFirstUnansweredQuestion
-          : questionsList!.length - 1;
+      currentQuestionIndex = indexOfFirstUnansweredQuestion >= 0 ? indexOfFirstUnansweredQuestion : questionsList!.length - 1;
     });
 
     // set the current tree part index to the found index, or 0 if no unanswered questions are found
@@ -104,8 +102,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
   }
 
   void _goToNextQuestion() {
-    if (questionsList != null &&
-        currentQuestionIndex < questionsList!.length - 1) {
+    if (questionsList != null && currentQuestionIndex < questionsList!.length - 1) {
       setState(() {
         currentQuestionIndex++;
         isInputVisible = false;
@@ -140,16 +137,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
     isInputVisible = false;
   }
 
-  final treeStates = const {
-    0: 'begin',
-    1: 'zaadje',
-    2: 'stam',
-    3: 'takken',
-    4: 'bladeren',
-    5: 'appels',
-    6: 'vogels',
-    7: 'last'
-  };
+  final treeStates = const {0: 'begin', 1: 'zaadje', 2: 'stam', 3: 'takken', 4: 'bladeren', 5: 'appels', 6: 'vogels', 7: 'last'};
 
   void _updateTreeState(String direction) async {
     final Completer<void> completer = Completer<void>();
@@ -207,8 +195,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
   void _initializeChewieController() {
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
-      aspectRatio: MediaQuery.of(context).size.width /
-          MediaQuery.of(context).size.height,
+      aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
       autoInitialize: true,
       autoPlay: true,
       looping: false,
@@ -253,8 +240,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
         } else if (snapshot.hasError) {
           print("Error loading video: ${snapshot.error}");
           return AspectRatio(
-            aspectRatio: MediaQuery.of(context).size.width /
-                MediaQuery.of(context).size.height,
+            aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
             child: Image.asset(
               'assets/tree_of_life/${treeStates[_state]}.png',
               fit: BoxFit.fill,
@@ -272,8 +258,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
     if (questionsList != null && questionsList!.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         // Get the RenderBox for the speech bubble widget using the GlobalKey
-        final RenderBox renderBox =
-            _speechBubbleKey.currentContext!.findRenderObject() as RenderBox;
+        final RenderBox renderBox = _speechBubbleKey.currentContext!.findRenderObject() as RenderBox;
 
         // Calculate the top position by adding the height of the speech bubble
         setState(() {
@@ -298,8 +283,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
             children: [
               // Background image (tree)
               AspectRatio(
-                aspectRatio: MediaQuery.of(context).size.width /
-                    MediaQuery.of(context).size.height,
+                aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
                 child: Image.asset(
                   'assets/tree_of_life/${_state > 0 ? treeStates[_state - 1] : treeStates[_state]}.png',
                   fit: BoxFit.fill,
@@ -310,8 +294,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
               treeStateChanged
                   ? buildChewieWidget()
                   : AspectRatio(
-                      aspectRatio: MediaQuery.of(context).size.width /
-                          MediaQuery.of(context).size.height,
+                      aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
                       child: Image.asset(
                         'assets/tree_of_life/${treeStates[_state]}.png',
                         fit: BoxFit.fill,
@@ -336,13 +319,10 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                     const SizedBox(height: 85),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(
-                            0.6), // Set your desired background color and opacity
-                        borderRadius: BorderRadius.circular(
-                            20.0), // Adjust the radius as needed
+                        color: Colors.white.withOpacity(0.6), // Set your desired background color and opacity
+                        borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
                       ),
-                      padding: const EdgeInsets.all(
-                          16.0), // Adjust the padding as needed
+                      padding: const EdgeInsets.all(16.0), // Adjust the padding as needed
                       margin: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -354,8 +334,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(
-                                      0xFF3855a2), // Adjust text color as needed
+                                  color: Color(0xFF3855a2), // Adjust text color as needed
                                 ),
                               ),
                               SizedBox(height: 7),
@@ -363,8 +342,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                                 "Je hebt alle vragen ingevuld,\nje boom is nu volgroeid.",
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Color(
-                                      0xFF3855a2), // Adjust text color as needed
+                                  color: Color(0xFF3855a2), // Adjust text color as needed
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -373,8 +351,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                                 "Scroll gerust terug om te kijken wat je \n antwoorden waren tijdens de groei van je boom",
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors
-                                      .black, // Adjust text color as needed
+                                  color: Colors.black, // Adjust text color as needed
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -397,8 +374,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                       : questionsList!.isEmpty
                           ? const Text("Geen actieve vragenlijst gevonden!")
                           : ChatBubble(
-                              message:
-                                  questionsList![currentQuestionIndex].content,
+                              message: questionsList![currentQuestionIndex].content,
                               horizontalPadding: 40,
                               verticalPadding: 20,
                               backgroundColor: Colors.white,
@@ -423,9 +399,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
               // Input bubble
               if (isInputVisible)
                 Positioned(
-                  bottom: isKeyboardVisible
-                      ? 350
-                      : 90, // Adjust the position as needed
+                  bottom: isKeyboardVisible ? 350 : 90, // Adjust the position as needed
                   left: MediaQuery.of(context).size.width / 2 - 150,
                   child: InputBubble(
                     answer: answer,
@@ -456,8 +430,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                   onPressed: () {
                     _goToPreviousQuestion();
                     if (questionsList != null && questionsList!.isNotEmpty) {
-                      if (currentTreePartIndex <
-                          questionsList![currentQuestionIndex].treePartId) {
+                      if (currentTreePartIndex < questionsList![currentQuestionIndex].treePartId) {
                         setState(() {
                           treeStateChanged = true;
                         });
@@ -474,8 +447,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                 // Antwoord
                 Positioned(
                   bottom: 30,
-                  left: MediaQuery.of(context).size.width / 2 -
-                      50, // Center Horizontally
+                  left: MediaQuery.of(context).size.width / 2 - 50, // Center Horizontally
                   right: null,
                   child: TextButton(
                     style: TextButton.styleFrom(
@@ -494,8 +466,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                     },
                     child: const Text(
                       'Antwoorden',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -517,10 +488,8 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                       iconSize: 55,
                       onPressed: () {
                         _goToNextQuestion();
-                        if (questionsList != null &&
-                            questionsList!.isNotEmpty) {
-                          if (currentTreePartIndex <
-                              questionsList![currentQuestionIndex].treePartId) {
+                        if (questionsList != null && questionsList!.isNotEmpty) {
+                          if (currentTreePartIndex < questionsList![currentQuestionIndex].treePartId) {
                             setState(() {
                               treeStateChanged = true;
                             });
@@ -629,7 +598,7 @@ class _InputBubbleState extends State<InputBubble> {
   }
 
   Future<void> _sendAnswer(String newAnswer) async {
-    String apiUrl = 'https://dewaaiburgapp.eu/api/answer'; // API URL
+    String apiEndpoint = '$apiUrl/answer'; // API URL
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.get('userToken');
     final userId = prefs.get('userId');
@@ -638,7 +607,7 @@ class _InputBubbleState extends State<InputBubble> {
       widget.answer!.answer = newAnswer;
       try {
         final response = await http.put(
-          Uri.parse("$apiUrl/${widget.answer!.id}"),
+          Uri.parse("$apiEndpoint/${widget.answer!.id}"),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
@@ -736,8 +705,7 @@ class BubbleClipper extends CustomClipper<Path> {
     final path = Path();
 
     path.moveTo(size.width - 20, size.height);
-    path.quadraticBezierTo(
-        size.width, size.height, size.width, size.height - 20);
+    path.quadraticBezierTo(size.width, size.height, size.width, size.height - 20);
 
     path.lineTo(size.width, 20);
     path.quadraticBezierTo(size.width, 0, size.width - 20, 0);

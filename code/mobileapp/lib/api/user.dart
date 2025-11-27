@@ -1,16 +1,16 @@
 import 'package:http/http.dart' as http;
+import 'package:mobileapp/api/api.dart';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<List<dynamic>> fetchUserDetails() async {
-  const String apiUrl = 'https://dewaaiburgapp.eu/api/user'; // API URL
+  const String apiEndpoint = '$apiUrl/user'; // API URL
   SharedPreferences prefs = await SharedPreferences.getInstance();
   final token = prefs.get('userToken');
 
   try {
-    final response = await http
-        .get(Uri.parse(apiUrl), headers: {'Authorization': 'Bearer $token'});
+    final response = await http.get(Uri.parse(apiEndpoint), headers: {'Authorization': 'Bearer $token'});
 
     if (response.statusCode == 200) {
       // Decode the entire JSON response
@@ -18,9 +18,7 @@ Future<List<dynamic>> fetchUserDetails() async {
 
       // Convert 'user' and 'mentor' fields into User instances
       User user = User.fromJson(jsonResponse['user']);
-      User? mentor = jsonResponse['mentor'].isNotEmpty
-          ? User.fromJson(jsonResponse['mentor'])
-          : null;
+      User? mentor = jsonResponse['mentor'].isNotEmpty ? User.fromJson(jsonResponse['mentor']) : null;
       return [user, mentor];
     } else {
       print("Request failed with status: ${response.statusCode}");

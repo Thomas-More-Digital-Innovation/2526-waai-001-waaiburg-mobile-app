@@ -1,17 +1,17 @@
 import 'package:http/http.dart' as http;
+import 'package:mobileapp/api/api.dart';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<List<dynamic>> fetchQuestionList() async {
-  const String apiUrl = 'https://dewaaiburgapp.eu/api/activeList'; // API URL
+  const String apiEndpoint = '$apiUrl/activeList'; // API URL
   SharedPreferences prefs = await SharedPreferences.getInstance();
   final token = prefs.get('userToken');
   final userId = prefs.get('userId');
 
   try {
-    final response = await http
-        .get(Uri.parse(apiUrl), headers: {'Authorization': 'Bearer $token'});
+    final response = await http.get(Uri.parse(apiEndpoint), headers: {'Authorization': 'Bearer $token'});
 
     if (response.statusCode == 200) {
       // Fetch the questions
@@ -19,13 +19,9 @@ Future<List<dynamic>> fetchQuestionList() async {
       // Fetch the answers
       Iterable answers = jsonDecode(response.body)['answers'][0];
 
-      List<Question> questionsList =
-          questions.map((model) => Question.fromJson(model)).toList();
+      List<Question> questionsList = questions.map((model) => Question.fromJson(model)).toList();
 
-      List<Answer> answersList = answers
-          .map((model) => Answer.fromJson(model))
-          .where((answer) => answer.userId == userId)
-          .toList();
+      List<Answer> answersList = answers.map((model) => Answer.fromJson(model)).where((answer) => answer.userId == userId).toList();
 
       return Future.value([questionsList, answersList]);
     } else {

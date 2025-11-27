@@ -2,15 +2,15 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 
+import 'package:mobileapp/api/api.dart';
+
 Future<List<InfoSegment>> fetchInfoSegments() async {
-  final response = await http.get(Uri.parse('https://dewaaiburgapp.eu/api/info'));
+  final response = await http.get(Uri.parse('$apiUrl/info'));
 
   if (response.statusCode == 200) {
     Iterable infoSegments = jsonDecode(response.body)["info's"][0];
-    List<InfoSegment> infoSegmentsList = List<InfoSegment>.from(
-        infoSegments.map((model) => InfoSegment.fromJson(model)));
-    infoSegmentsList.sort((a, b) =>
-        (a.orderNumber ?? 0).toInt().compareTo((b.orderNumber ?? 0).toInt()));
+    List<InfoSegment> infoSegmentsList = List<InfoSegment>.from(infoSegments.map((model) => InfoSegment.fromJson(model)));
+    infoSegmentsList.sort((a, b) => (a.orderNumber ?? 0).toInt().compareTo((b.orderNumber ?? 0).toInt()));
     return infoSegmentsList;
   } else {
     throw Exception(response.reasonPhrase);
