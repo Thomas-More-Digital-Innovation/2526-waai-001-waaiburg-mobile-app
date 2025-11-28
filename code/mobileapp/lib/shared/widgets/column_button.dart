@@ -104,7 +104,12 @@ class ColumnImageButton extends StatelessWidget {
       label: label,
       infoId: infoId,
       onTap: onTap,
-      child: Image.network(label),
+      child: Image.network(
+        label,
+        gaplessPlayback: true, // Prevents flickering when rebuilding
+        cacheWidth: 300, // Caches a smaller version in memory
+        fit: BoxFit.contain,
+      ),
     );
   }
 }
