@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'package:mobileapp/api/api.dart';
+import 'package:mobileapp/model/section.dart';
 
 Future<List<Section>> fetchSections() async {
   final response = await http.get(Uri.parse('$apiUrl/section'));
@@ -13,28 +14,5 @@ Future<List<Section>> fetchSections() async {
     return sectionsList;
   } else {
     throw Exception(response.reasonPhrase);
-  }
-}
-
-class Section {
-  final int id;
-  final String name;
-  final String? createdAt;
-  final String? updatedAt;
-
-  const Section({
-    required this.id,
-    required this.name,
-    this.createdAt,
-    this.updatedAt,
-  });
-
-  factory Section.fromJson(Map<String, dynamic> json) {
-    return Section(
-      id: json['id'],
-      name: json['name'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-    );
   }
 }

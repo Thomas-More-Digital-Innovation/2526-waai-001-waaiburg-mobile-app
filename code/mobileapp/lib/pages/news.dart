@@ -8,6 +8,7 @@ import 'package:mobileapp/components/news_card.dart';
 import 'package:mobileapp/components/page_content_progress_indicator.dart';
 import 'package:mobileapp/model/info_content.dart';
 import 'package:mobileapp/model/info_segment.dart';
+import 'package:mobileapp/model/section.dart';
 
 class News extends StatefulWidget {
   const News({super.key});
