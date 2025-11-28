@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobileapp/config/routes.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class HomeButton extends StatelessWidget {
@@ -23,18 +25,17 @@ class HomeButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (route.substring(0, 5) == "https") {
+        if (route.startsWith("https")) {
           launchUrlString(route);
           return;
         }
-        Navigator.pushNamed(
-          context,
-          route,
-          arguments: <String, dynamic>{
-            'sectionId': sectionId,
-            'route': route,
-          },
-        );
+        // Use the route directly if it's a simple route (like /news, /tree)
+        // Otherwise use infoSegmentsPath for section-based navigation
+        if (sectionId > 0) {
+          context.push(AppRoutes.infoSegmentsPath(sectionId));
+        } else {
+          context.push(route);
+        }
       },
       child: Container(
         padding: const EdgeInsets.all(18.0),

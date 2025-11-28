@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobileapp/config/routes.dart';
 
 class NewsCard extends StatelessWidget {
   const NewsCard({required this.infoId, required this.title, required this.subText, required this.date, super.key});
@@ -8,22 +10,12 @@ class NewsCard extends StatelessWidget {
   final String subText;
   final DateTime date;
 
-  final String route = "/infocontentselect";
-
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          route,
-          arguments: <String, dynamic>{
-            'infoId': infoId,
-            'route': route,
-            'title': title,
-          },
-        );
+        context.push(AppRoutes.infoContentSelectPath(infoId, title: title));
       },
       child: Card(
         margin: EdgeInsets.symmetric(horizontal: width * 0.1, vertical: 18.0),

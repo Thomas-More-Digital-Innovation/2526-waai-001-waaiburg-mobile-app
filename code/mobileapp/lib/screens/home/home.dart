@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobileapp/config/routes.dart';
 import 'package:mobileapp/screens/home/widgets/home_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -99,8 +101,8 @@ class _HomeState extends State<Home> {
                         name: "NIEUWTJES",
                         icon: FontAwesomeIcons.newspaper,
                         iconColor: Theme.of(context).colorScheme.primaryContainer,
-                        sectionId: 3,
-                        route: "/news",
+                        sectionId: 0,
+                        route: AppRoutes.news,
                       ),
                       HomeButton(
                         name: "WEBSITE",
@@ -114,15 +116,15 @@ class _HomeState extends State<Home> {
                           name: "LEVENSBOOM",
                           icon: FontAwesomeIcons.tree,
                           iconColor: Theme.of(context).colorScheme.primaryContainer,
-                          sectionId: 1,
-                          route: "/treehome",
+                          sectionId: 0,
+                          route: AppRoutes.treeHome,
                         ),
                         HomeButton(
                           name: "GEGEVENS",
                           icon: FontAwesomeIcons.user,
                           iconColor: Theme.of(context).colorScheme.secondary,
-                          sectionId: 1,
-                          route: "/userdetails",
+                          sectionId: 0,
+                          route: AppRoutes.userDetails,
                         ),
                       ],
                     ],
@@ -140,7 +142,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   onPressed: () {
-                    userLoggedIn ? logOut() : Navigator.pushNamed(context, '/login');
+                    userLoggedIn ? logOut() : context.push(AppRoutes.login);
                   },
                   child: Text(
                     userLoggedIn ? 'Uitloggen' : 'Inloggen',

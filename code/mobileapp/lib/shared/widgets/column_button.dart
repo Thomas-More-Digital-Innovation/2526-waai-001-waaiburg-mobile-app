@@ -4,32 +4,25 @@ class ColumnButton extends StatelessWidget {
   final Color color;
   final String label;
   final int infoId;
-  final String pageRoute;
+  final String? title;
   final Widget child;
+  final VoidCallback onTap;
 
   const ColumnButton({
     super.key,
     required this.color,
     required this.label,
     required this.infoId,
-    required this.pageRoute,
+    this.title,
     required this.child,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(
-          context,
-          pageRoute,
-          arguments: <String, dynamic>{
-            'infoId': infoId,
-            'route': pageRoute,
-          },
-        );
-      },
+      onTap: onTap,
       child: Container(
           margin: EdgeInsets.symmetric(horizontal: width * 0.1, vertical: 18.0),
           padding: EdgeInsets.symmetric(horizontal: width * 0.022),
@@ -59,14 +52,14 @@ class ColumnTextButton extends StatelessWidget {
   final Color color;
   final String label;
   final int infoId;
-  final String pageRoute;
+  final VoidCallback onTap;
 
   const ColumnTextButton({
     super.key,
     required this.color,
     required this.label,
     required this.infoId,
-    required this.pageRoute,
+    required this.onTap,
   });
 
   @override
@@ -75,7 +68,8 @@ class ColumnTextButton extends StatelessWidget {
       color: color,
       label: label,
       infoId: infoId,
-      pageRoute: pageRoute,
+      title: label,
+      onTap: onTap,
       child: Text(
         label,
         textAlign: TextAlign.center,
@@ -93,14 +87,14 @@ class ColumnImageButton extends StatelessWidget {
   final Color color;
   final String label;
   final int infoId;
-  final String pageRoute;
+  final VoidCallback onTap;
 
   const ColumnImageButton({
     super.key,
     required this.color,
     required this.label,
     required this.infoId,
-    required this.pageRoute,
+    required this.onTap,
   });
 
   @override
@@ -109,7 +103,7 @@ class ColumnImageButton extends StatelessWidget {
       color: color,
       label: label,
       infoId: infoId,
-      pageRoute: pageRoute,
+      onTap: onTap,
       child: Image.network(label),
     );
   }

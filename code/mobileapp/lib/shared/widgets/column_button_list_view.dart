@@ -4,8 +4,13 @@ import 'package:mobileapp/config/theme.dart';
 
 class ColumnButtonListView extends StatelessWidget {
   final List list;
-  final String route;
-  const ColumnButtonListView({super.key, required this.list, required this.route});
+  final void Function(int id, String title) onItemTap;
+
+  const ColumnButtonListView({
+    super.key,
+    required this.list,
+    required this.onItemTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,14 +25,14 @@ class ColumnButtonListView extends StatelessWidget {
               color: Theme.of(context).colorScheme.surface,
               label: info.titleImage!,
               infoId: info.id,
-              pageRoute: route,
+              onTap: () => onItemTap(info.id, info.title),
             );
           } else {
             return ColumnTextButton(
               color: getColumnButtonColor(index),
               label: info.title,
               infoId: info.id,
-              pageRoute: route,
+              onTap: () => onItemTap(info.id, info.title),
             );
           }
         },

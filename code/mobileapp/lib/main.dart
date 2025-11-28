@@ -8,10 +8,10 @@ import 'package:mobileapp/config/theme.dart';
 void main() {
   cacheData();
   runApp(
-    MaterialApp(
+    MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       theme: theme,
-      initialRoute: initialRoute,
-      routes: appRoutes,
+      routerConfig: appRouter,
     ),
   );
 }

@@ -1,6 +1,8 @@
 import 'package:mobileapp/api/info.dart';
 import 'package:mobileapp/api/section.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobileapp/config/routes.dart';
 import 'package:mobileapp/shared/widgets/column_button_list_view.dart';
 import 'package:mobileapp/shared/widgets/header.dart';
 import 'package:mobileapp/api/cache.dart';
@@ -9,7 +11,9 @@ import 'package:mobileapp/model/info_segment.dart';
 import 'package:mobileapp/model/section.dart';
 
 class InfoSegments extends StatefulWidget {
-  const InfoSegments({super.key});
+  const InfoSegments({super.key, required this.sectionId});
+
+  final int sectionId;
 
   @override
   State<InfoSegments> createState() => _InfoSegmentsState();
@@ -25,7 +29,6 @@ class _InfoSegmentsState extends State<InfoSegments> {
 
   @override
   Widget build(BuildContext context) {
-    final arg = ModalRoute.of(context)!.settings.arguments as Map;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: Header(
@@ -33,7 +36,7 @@ class _InfoSegmentsState extends State<InfoSegments> {
           future: sections,
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
-              return Text(snapshot.data!.firstWhere((i) => i.id == arg["sectionId"]).name);
+              return Text(snapshot.data!.firstWhere((i) => i.id == widget.sectionId).name);
             }
             // show a loading spinner
             else {
@@ -48,7 +51,13 @@ class _InfoSegmentsState extends State<InfoSegments> {
           future: infoSegments,
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
-              return ColumnButtonListView(list: snapshot.data!.where((i) => i.sectionId == arg["sectionId"]).toList(), route: '/infocontent');
+              return ColumnButtonListView(
+                list: snapshot.data!.where((i) => i.sectionId == widget.sectionId).toList(),
+                onItemTap: (infoId, title) {
+                  // Navigate to InfoContents (intermediate page)
+                  context.push(AppRoutes.infoContentsPath(widget.sectionId, infoId, title: title));
+                },
+              );
             }
             // show a loading spinner
             else {

@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart';
 import 'package:mobileapp/config/env.dart';
+import 'package:mobileapp/config/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -32,7 +34,7 @@ class _MyWidgetState extends State<LoginPage> {
         Map<String, dynamic> userData = data['User'];
         prefs.setInt('userId', userData['id']);
 
-        Navigator.pushNamed(context, '/home');
+        context.go(AppRoutes.home);
       } else {
         setState(() {
           failedLogin = true;
