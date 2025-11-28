@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'package:mobileapp/api/cache.dart';
 import 'package:mobileapp/api/info.dart';
-import 'package:mobileapp/api/info_content.dart';
 import 'package:mobileapp/api/section.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileapp/components/header.dart';
 import 'package:mobileapp/components/news_card.dart';
 import 'package:mobileapp/components/page_content_progress_indicator.dart';
+import 'package:mobileapp/model/info_content.dart';
+import 'package:mobileapp/model/info_segment.dart';
 
 class News extends StatefulWidget {
   const News({super.key});

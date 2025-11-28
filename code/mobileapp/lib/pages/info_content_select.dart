@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:mobileapp/api/info_content.dart';
+import 'package:mobileapp/api/info.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileapp/components/header.dart';
 import 'package:mobileapp/components/page_content_progress_indicator.dart';
+import 'package:mobileapp/model/info_content.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class InfoContentSelected extends StatefulWidget {

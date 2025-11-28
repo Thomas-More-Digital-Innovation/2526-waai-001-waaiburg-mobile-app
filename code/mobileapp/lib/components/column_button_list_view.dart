@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/api/info.dart';
 import 'package:mobileapp/components/column_button.dart';
 import 'package:mobileapp/theme/theme.dart';
 
@@ -14,7 +13,7 @@ class ColumnButtonListView extends StatelessWidget {
       children: list.asMap().entries.map(
         (entry) {
           final int index = entry.key;
-          final InfoSegment info = entry.value;
+          final info = entry.value;
 
           if (info.titleImage != null) {
             return ColumnImageButton(

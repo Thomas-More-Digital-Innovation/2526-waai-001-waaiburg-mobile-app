@@ -5,6 +5,7 @@ import 'package:mobileapp/components/column_button_list_view.dart';
 import 'package:mobileapp/components/header.dart';
 import 'package:mobileapp/api/cache.dart';
 import 'package:mobileapp/components/page_content_progress_indicator.dart';
+import 'package:mobileapp/model/info_segment.dart';
 
 class InfoSegments extends StatefulWidget {
   const InfoSegments({super.key});
