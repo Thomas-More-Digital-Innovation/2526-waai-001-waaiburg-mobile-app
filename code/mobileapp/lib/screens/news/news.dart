@@ -5,7 +5,7 @@ import 'package:mobileapp/api/section.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileapp/shared/widgets/header.dart';
 import 'package:mobileapp/screens/news/widgets/news_card.dart';
-import 'package:mobileapp/shared/widgets/page_content_progress_indicator.dart';
+import 'package:mobileapp/shared/widgets/page_content_loading_indicator.dart';
 import 'package:mobileapp/model/info_content.dart';
 import 'package:mobileapp/model/info_segment.dart';
 import 'package:mobileapp/model/section.dart';
@@ -93,7 +93,7 @@ class _NewsState extends State<News> {
               }
               // show a loading spinner
               else {
-                return PageContentProgressIndicator(
+                return PageContentLoadingIndicator(
                   color: Theme.of(context).colorScheme.secondary,
                 );
               }

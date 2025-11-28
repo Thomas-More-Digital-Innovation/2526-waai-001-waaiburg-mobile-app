@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobileapp/api/user.dart';
 import 'package:mobileapp/shared/widgets/header.dart';
-import 'package:mobileapp/shared/widgets/page_content_progress_indicator.dart';
+import 'package:mobileapp/shared/widgets/page_content_loading_indicator.dart';
 import 'package:mobileapp/model/user.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -86,7 +86,7 @@ class _UserDetailsState extends State<UserDetails> {
                       ],
                     );
                   } else {
-                    return const PageContentProgressIndicator();
+                    return const PageContentLoadingIndicator();
                   }
                 },
               ),

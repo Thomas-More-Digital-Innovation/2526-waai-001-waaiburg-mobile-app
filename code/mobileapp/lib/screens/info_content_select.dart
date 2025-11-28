@@ -4,7 +4,7 @@ import 'package:mobileapp/api/cache.dart';
 import 'package:mobileapp/api/info.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileapp/shared/widgets/header.dart';
-import 'package:mobileapp/shared/widgets/page_content_progress_indicator.dart';
+import 'package:mobileapp/shared/widgets/page_content_loading_indicator.dart';
 import 'package:mobileapp/model/info_content.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -86,7 +86,7 @@ class _InfoContentSelectedState extends State<InfoContentSelected> {
               }
               // show a loading spinner
               else {
-                return const PageContentProgressIndicator();
+                return const PageContentLoadingIndicator();
               }
             },
           ),

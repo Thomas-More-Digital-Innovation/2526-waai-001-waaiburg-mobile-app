@@ -6,7 +6,7 @@ import 'package:mobileapp/config/routes.dart';
 import 'package:mobileapp/shared/widgets/column_button_list_view.dart';
 import 'package:mobileapp/shared/widgets/header.dart';
 import 'package:mobileapp/api/cache.dart';
-import 'package:mobileapp/shared/widgets/page_content_progress_indicator.dart';
+import 'package:mobileapp/shared/widgets/page_content_loading_indicator.dart';
 import 'package:mobileapp/model/info_segment.dart';
 import 'package:mobileapp/model/section.dart';
 
@@ -61,7 +61,7 @@ class _InfoSegmentsState extends State<InfoSegments> {
             }
             // show a loading spinner
             else {
-              return const PageContentProgressIndicator();
+              return const PageContentLoadingIndicator();
             }
           },
         ),

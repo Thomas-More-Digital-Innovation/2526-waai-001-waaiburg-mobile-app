@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class PageContentProgressIndicator extends StatelessWidget {
+class PageContentLoadingIndicator extends StatelessWidget {
   final Color? color;
-  const PageContentProgressIndicator({super.key, this.color});
+  const PageContentLoadingIndicator({super.key, this.color});
 
   @override
   Widget build(BuildContext context) {
