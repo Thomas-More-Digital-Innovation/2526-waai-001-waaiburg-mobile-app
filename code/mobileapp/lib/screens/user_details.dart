@@ -124,7 +124,7 @@ class _UserDetailsState extends State<UserDetails> {
             ],
           ),
           const SizedBox(height: 15),
-          UserDetailsItemLabel("Voornaam:", user?.firstname ?? ''),
+          UserDetailsItemLabel("Voornaam:", user?.firstName ?? ''),
           UserDetailsItemLabel("Achternaam:", user?.surname ?? ''),
           UserDetailsItemLabel("E-mail:", user?.email ?? ''),
           UserDetailsItemLabel(
@@ -183,7 +183,7 @@ class UserDetailsItemLabel extends StatelessWidget {
   final String label;
   final String value;
 
-  const UserDetailsItemLabel(this.label, this.value, {Key? key}) : super(key: key);
+  const UserDetailsItemLabel(this.label, this.value, {super.key});
 
   @override
   Widget build(BuildContext context) {

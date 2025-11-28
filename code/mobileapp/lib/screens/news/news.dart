@@ -22,7 +22,7 @@ class _NewsState extends State<News> {
   late Future<List<InfoContent>> futureInfoContent;
   late Future<List<dynamic>> futureNews;
 
-  Future<List> fetchNews(sectionId) async {
+  Future<List> fetchNews(int sectionId) async {
     List test = await futureInfoSegments;
     List content = await futureInfoContent;
     List newsItems = [];

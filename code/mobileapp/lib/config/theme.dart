@@ -27,7 +27,7 @@ ColorScheme colorScheme = ColorScheme(
 
 List<Color> columnButtonColors = [
   colorScheme.tertiary,
-  const Color(0xFFb1b4dc), // TODO put color in color scheme
+  colorScheme.secondaryContainer,
   colorScheme.secondary,
   colorScheme.primary,
 ];

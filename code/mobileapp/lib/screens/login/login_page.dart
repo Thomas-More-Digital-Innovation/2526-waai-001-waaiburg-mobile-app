@@ -41,9 +41,13 @@ class _MyWidgetState extends State<LoginPage> {
         });
       }
     } catch (e) {
-      // TODO: show error
-      print("THERE WAS AN EXCEPTION: ");
-      print(e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to login, please try again.")),
+        );
+      }
+      debugPrint("THERE WAS AN EXCEPTION: ");
+      debugPrint(e.toString());
     }
   }
 

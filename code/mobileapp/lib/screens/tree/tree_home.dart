@@ -12,7 +12,7 @@ import 'package:video_player/video_player.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 class TreeHome extends StatefulWidget {
-  const TreeHome({Key? key}) : super(key: key);
+  const TreeHome({super.key});
 
   @override
   State<TreeHome> createState() => _TreeHomeState();
@@ -320,7 +320,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                     const SizedBox(height: 85),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.6), // Set your desired background color and opacity
+                        color: Colors.white.withAlpha(140), // Set your desired background color and opacity
                         borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
                       ),
                       padding: const EdgeInsets.all(16.0), // Adjust the padding as needed
@@ -519,14 +519,14 @@ class ChatBubble extends StatelessWidget {
   final double maxWidth;
 
   const ChatBubble({
-    Key? key,
+    super.key,
     required this.message,
     this.horizontalPadding = 16.0,
     this.verticalPadding = 8.0,
     this.backgroundColor = Colors.blue,
     this.textColor = Colors.white,
     this.maxWidth = 200.0,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -563,12 +563,12 @@ class InputBubble extends StatefulWidget {
   final Function(bool) updateKeyboardVisibility;
 
   InputBubble({
-    Key? key,
+    super.key,
     this.answer,
     required this.questionId,
     required this.reloadData,
     required this.updateKeyboardVisibility,
-  }) : super(key: key);
+  });
 
   @override
   _InputBubbleState createState() => _InputBubbleState();

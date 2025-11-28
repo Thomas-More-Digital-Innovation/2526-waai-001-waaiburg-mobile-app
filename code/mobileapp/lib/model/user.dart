@@ -1,7 +1,7 @@
 class User {
   final int id;
   final int userTypeId;
-  final String firstname;
+  final String firstName;
   final String surname;
   final String? birthdate;
   final String email;
@@ -19,7 +19,7 @@ class User {
   const User({
     required this.id,
     required this.userTypeId,
-    required this.firstname,
+    required this.firstName,
     required this.surname,
     required this.email,
     this.birthdate,
@@ -39,7 +39,7 @@ class User {
     return User(
         id: json['id'],
         userTypeId: json['user_type_id'],
-        firstname: json['firstname'],
+        firstName: json['firstname'],
         surname: json['surname'],
         birthdate: json['birthdate'],
         email: json['email'],
