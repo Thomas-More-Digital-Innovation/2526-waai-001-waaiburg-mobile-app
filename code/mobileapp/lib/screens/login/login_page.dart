@@ -6,7 +6,7 @@ import 'package:mobileapp/config/env.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../widgets/header.dart';
+import '../../shared/widgets/header.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

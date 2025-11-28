@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/widgets/column_button.dart';
+import 'package:mobileapp/shared/widgets/column_button.dart';
 import 'package:mobileapp/config/theme.dart';
 
 class ColumnButtonListView extends StatelessWidget {
