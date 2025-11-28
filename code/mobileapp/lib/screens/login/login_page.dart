@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:mobileapp/api/api.dart';
+import 'package:mobileapp/config/env.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../components/header.dart';
+import '../../widgets/header.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -110,7 +110,7 @@ class _MyWidgetState extends State<LoginPage> {
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
                   onTap: () {
-                    launchUrl(Uri.parse("https://dewaaiburgapp.eu/forgot-password"));
+                    launchUrl(Uri.parse(forgotPasswordUrl));
                   },
                   child: Text(
                     'Wachtwoord vergeten?',

@@ -1,5 +1,5 @@
 import 'package:http/http.dart' as http;
-import 'package:mobileapp/api/api.dart';
+import 'package:mobileapp/config/env.dart';
 import 'package:mobileapp/model/qna.dart';
 import 'dart:convert';
 

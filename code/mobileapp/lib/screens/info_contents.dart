@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:mobileapp/api/info.dart';
 import 'package:flutter/material.dart';
-import 'package:mobileapp/components/column_button_list_view.dart';
-import 'package:mobileapp/components/header.dart';
-import 'package:mobileapp/components/page_content_progress_indicator.dart';
+import 'package:mobileapp/widgets/column_button_list_view.dart';
+import 'package:mobileapp/widgets/header.dart';
+import 'package:mobileapp/widgets/page_content_progress_indicator.dart';
 import 'package:mobileapp/model/info_content.dart';
 import 'package:mobileapp/model/info_segment.dart';
 

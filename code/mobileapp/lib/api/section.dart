@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 
-import 'package:mobileapp/api/api.dart';
+import 'package:mobileapp/config/env.dart';
 import 'package:mobileapp/model/section.dart';
 
 Future<List<Section>> fetchSections() async {

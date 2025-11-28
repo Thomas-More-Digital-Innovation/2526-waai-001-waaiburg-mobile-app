@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:mobileapp/api/api.dart';
+import 'package:mobileapp/config/env.dart';
 import 'package:mobileapp/model/info_segment.dart';
 import 'package:mobileapp/model/info_content.dart';
 import 'package:mobileapp/model/sortable.dart';
