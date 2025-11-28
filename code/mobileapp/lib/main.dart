@@ -8,6 +8,7 @@ import 'package:mobileapp/pages/info_contents.dart';
 import 'package:mobileapp/pages/news.dart';
 import 'package:mobileapp/pages/tree_home.dart';
 import 'package:mobileapp/pages/user_details.dart';
+import 'package:mobileapp/theme/theme.dart';
 
 /// The website screen
 /// This screen is a webview
@@ -15,7 +16,7 @@ void main() {
   cacheData();
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    theme: ThemeData(fontFamily: 'Epilogue'),
+    theme: theme,
     initialRoute: "/home",
     routes: {
       '/login': (context) => const LoginPage(),

@@ -26,20 +26,21 @@ class _InfoContentSelectedState extends State<InfoContentSelected> {
   Widget build(BuildContext context) {
     final arg = ModalRoute.of(context)!.settings.arguments as Map;
     return Scaffold(
-      extendBodyBehindAppBar: false,
       appBar: Header(
-        title: FutureBuilder<List<InfoContent>>(
-          future: futureInfoContents,
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
-              return Text(snapshot.data!.firstWhere((i) => i.id == arg['infoId']).title);
-            }
-            // show a loading spinner
-            else {
-              return const CircularProgressIndicator();
-            }
-          },
-        ),
+        title: arg['title'] != null
+            ? Text(arg['title'])
+            : FutureBuilder<List<InfoContent>>(
+                future: futureInfoContents,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
+                    return Text(snapshot.data!.firstWhere((i) => i.id == arg['infoId']).title);
+                  }
+                  // show a loading spinner
+                  else {
+                    return const CircularProgressIndicator();
+                  }
+                },
+              ),
       ),
       body: SingleChildScrollView(
         child: FutureBuilder<List<InfoContent>>(

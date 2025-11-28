@@ -1,7 +1,7 @@
 import 'package:mobileapp/api/info.dart';
 import 'package:mobileapp/api/section.dart';
 import 'package:flutter/material.dart';
-import 'package:mobileapp/components/list_buttons.dart';
+import 'package:mobileapp/components/column_button_list_view.dart';
 import 'package:mobileapp/components/header.dart';
 import 'package:mobileapp/api/cache.dart';
 import 'package:mobileapp/components/page_content_progress_indicator.dart';
@@ -46,7 +46,7 @@ class _InfoSegmentsState extends State<InfoSegments> {
           future: infoSegments,
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
-              return ListButtons(list: snapshot.data!.where((i) => i.sectionId == arg["sectionId"]).toList(), route: '/infocontent');
+              return ColumnButtonListView(list: snapshot.data!.where((i) => i.sectionId == arg["sectionId"]).toList(), route: '/infocontent');
             }
             // show a loading spinner
             else {

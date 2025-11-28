@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:mobileapp/api/info_content.dart';
 import 'package:mobileapp/api/info.dart';
 import 'package:flutter/material.dart';
-import 'package:mobileapp/components/list_buttons.dart';
+import 'package:mobileapp/components/column_button_list_view.dart';
 import 'package:mobileapp/components/header.dart';
 import 'package:mobileapp/components/page_content_progress_indicator.dart';
 
@@ -14,14 +14,14 @@ class InfoContents extends StatefulWidget {
 }
 
 class _InfoContentsState extends State<InfoContents> {
-  late Future<List<InfoContent>> futureInfoContents;
-  late Future<List<InfoSegment>> futureInfoSegments;
+  late Future<List<InfoContent>> infoContents;
+  late Future<List<InfoSegment>> infoSegments;
 
   @override
   void initState() {
     super.initState();
-    futureInfoContents = fetchInfoContents();
-    futureInfoSegments = fetchInfoSegments();
+    infoContents = fetchInfoContents();
+    infoSegments = fetchInfoSegments();
   }
 
   @override
@@ -30,26 +30,28 @@ class _InfoContentsState extends State<InfoContents> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: Header(
-        title: FutureBuilder<List<InfoSegment>>(
-          future: futureInfoSegments,
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
-              return Text(snapshot.data!.firstWhere((i) => i.id == arg['infoId']).title);
-            }
-            // show a loading spinner
-            else {
-              return const CircularProgressIndicator();
-            }
-          },
-        ),
+        title: arg['title'] != null
+            ? Text(arg['title'])
+            : FutureBuilder<List<InfoSegment>>(
+                future: infoSegments,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
+                    return Text(snapshot.data!.firstWhere((i) => i.id == arg['infoId']).title);
+                  }
+                  // show a loading spinner
+                  else {
+                    return const CircularProgressIndicator();
+                  }
+                },
+              ),
       ),
       body: FutureBuilder<List<InfoContent>>(
-        future: futureInfoContents,
+        future: infoContents,
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
-            return ListButtons(list: snapshot.data!.where((i) => i.infoId == arg['infoId']).toList(), route: '/infocontentselect');
+            return ColumnButtonListView(list: snapshot.data!.where((i) => i.infoId == arg['infoId']).toList(), route: '/infocontentselect');
           }
-          // show a loading spinnersnapshot.data!.where((i) => i.sectionId == 1).toList());
+          // show a loading spinner
           else {
             return const PageContentProgressIndicator();
           }

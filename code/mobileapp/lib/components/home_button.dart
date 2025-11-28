@@ -37,7 +37,6 @@ class HomeButton extends StatelessWidget {
         );
       },
       child: Container(
-        margin: const EdgeInsets.all(0.0),
         padding: const EdgeInsets.all(18.0),
         decoration: BoxDecoration(
           color: Colors.white.withAlpha(64),

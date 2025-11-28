@@ -21,6 +21,7 @@ class InfoSegment {
   final int id;
   final int sectionId;
   final String title;
+  final String? titleImage;
   final int? orderNumber;
   final String? createdAt;
   final String? updatedAt;
@@ -29,6 +30,7 @@ class InfoSegment {
     required this.id,
     required this.sectionId,
     required this.title,
+    this.titleImage,
     this.orderNumber,
     this.createdAt,
     this.updatedAt,
@@ -39,6 +41,7 @@ class InfoSegment {
       id: json['id'],
       sectionId: json['section_id'],
       title: json['title'],
+      titleImage: json['titleImage'],
       orderNumber: json['orderNumber'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],

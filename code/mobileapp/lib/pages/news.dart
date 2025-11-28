@@ -5,7 +5,7 @@ import 'package:mobileapp/api/info_content.dart';
 import 'package:mobileapp/api/section.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileapp/components/header.dart';
-import 'package:mobileapp/components/list_cards.dart';
+import 'package:mobileapp/components/news_card.dart';
 import 'package:mobileapp/components/page_content_progress_indicator.dart';
 
 class News extends StatefulWidget {
@@ -80,8 +80,7 @@ class _NewsState extends State<News> {
               if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
                 return ListView(
                   children: snapshot.data!.asMap().entries.map((info) {
-                    return ListCard(
-                      route: '/infocontentselect',
+                    return NewsCard(
                       infoId: info.value.id,
                       title: info.value.title.toUpperCase(),
                       subText: info.value.shortContent,
@@ -95,58 +94,6 @@ class _NewsState extends State<News> {
                 return const PageContentProgressIndicator();
               }
             },
-          ),
-        ),
-      ),
-    );
-  }
-
-  static const List<Color> buttonColors = [
-    Color(0xFFF9cc3e),
-    Color(0xFFb1b4dc),
-    Color(0xFF3855a2),
-    Color(0xFF46ae93),
-  ];
-
-  GestureDetector buildButtonColumn(Color color, String label, int infoId, String pageRoute) {
-    final double width = MediaQuery.of(context).size.width;
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(
-          context,
-          pageRoute,
-          arguments: <String, dynamic>{
-            'infoId': infoId,
-            'route': pageRoute,
-          },
-        );
-      },
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: width * 0.1, vertical: 18.0),
-        padding: EdgeInsets.symmetric(horizontal: width * 0.022),
-        height: width / 4,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(width * 0.08),
-          color: color,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey[600]!,
-              offset: const Offset(
-                0.0,
-                5.0,
-              ),
-              blurRadius: 10.0,
-              spreadRadius: -1.5,
-            ),
-          ],
-        ),
-        child: Text(
-          label,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
           ),
         ),
       ),

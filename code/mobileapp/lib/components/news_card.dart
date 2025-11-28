@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
 
-class ListCard extends StatelessWidget {
-  const ListCard(
-      {required this.route,
-      required this.infoId,
-      required this.title,
-      required this.subText,
-      required this.date,
-      super.key});
+class NewsCard extends StatelessWidget {
+  const NewsCard({required this.infoId, required this.title, required this.subText, required this.date, super.key});
 
-  final String route;
   final int infoId;
   final String title;
   final String subText;
   final DateTime date;
+
+  final String route = "/infocontentselect";
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +21,7 @@ class ListCard extends StatelessWidget {
           arguments: <String, dynamic>{
             'infoId': infoId,
             'route': route,
+            'title': title,
           },
         );
       },
@@ -34,7 +30,6 @@ class ListCard extends StatelessWidget {
         elevation: 5,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          //set border radius more than 50% of height and width to make circle
         ),
         child: Column(
           children: [
