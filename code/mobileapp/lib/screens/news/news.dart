@@ -93,7 +93,9 @@ class _NewsState extends State<News> {
               }
               // show a loading spinner
               else {
-                return const PageContentProgressIndicator();
+                return PageContentProgressIndicator(
+                  color: Theme.of(context).colorScheme.secondary,
+                );
               }
             },
           ),
