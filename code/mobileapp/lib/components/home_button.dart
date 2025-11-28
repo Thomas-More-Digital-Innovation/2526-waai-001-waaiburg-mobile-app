@@ -39,7 +39,7 @@ class HomeButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(18.0),
         decoration: BoxDecoration(
-          color: Colors.white.withAlpha(64),
+          color: Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: const BorderRadius.all(
             Radius.circular(30),
           ),

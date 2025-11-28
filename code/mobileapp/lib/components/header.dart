@@ -6,11 +6,12 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
 
   final Widget title;
   final Color? bgColor;
-  final int? titleColor;
+  final Color? titleColor;
   const Header({required this.title, this.bgColor, this.titleColor, super.key});
 
   @override
   Widget build(BuildContext context) {
+    final titleColor = this.titleColor ?? Theme.of(context).colorScheme.secondary;
     return AppBar(
       title: title,
       centerTitle: true,
@@ -19,13 +20,13 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
       leading: IconButton(
         icon: Icon(
           Icons.arrow_back_ios_new_rounded,
-          color: Color(titleColor ?? 0xFF3855a2),
+          color: titleColor,
           weight: 0.9,
         ),
         iconSize: 32,
         onPressed: () => Navigator.of(context).pop(),
       ),
-      titleTextStyle: TextStyle(fontWeight: FontWeight.w600, color: Color(titleColor ?? 0xFF3855a2), fontSize: 32),
+      titleTextStyle: TextStyle(fontWeight: FontWeight.w600, color: titleColor, fontSize: 32),
     );
   }
 }

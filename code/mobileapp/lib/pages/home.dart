@@ -52,7 +52,7 @@ class _HomeState extends State<Home> {
 
     return Scaffold(
       body: Container(
-        color: const Color(0xFF46ae93),
+        color: Theme.of(context).colorScheme.primary,
         child: Container(
           padding: const EdgeInsets.all(20.0),
           child: Column(
@@ -63,7 +63,7 @@ class _HomeState extends State<Home> {
                 child: Center(
                   child: SvgPicture.asset(
                     'assets/WAAIBURG_DEFINITIEF_vector_RGB_Tekengebied 1-01.svg',
-                    colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),
                     semanticsLabel: 'Waaiburg Logo',
                     height: 150,
                   ),
@@ -81,46 +81,46 @@ class _HomeState extends State<Home> {
                     primary: false,
                     shrinkWrap: false,
                     children: [
-                      const HomeButton(
+                      HomeButton(
                         name: "JONGEREN",
                         icon: FontAwesomeIcons.child,
-                        iconColor: Color(0xFF3855a2),
+                        iconColor: Theme.of(context).colorScheme.secondary,
                         sectionId: 2,
                         route: "/infosegment",
                       ),
-                      const HomeButton(
+                      HomeButton(
                         name: "VOLWASSENEN",
                         icon: FontAwesomeIcons.userTie,
-                        iconColor: Color(0xBBFFFFFF),
+                        iconColor: Theme.of(context).colorScheme.primaryContainer,
                         sectionId: 1,
                         route: "/infosegment",
                       ),
-                      const HomeButton(
+                      HomeButton(
                         name: "NIEUWTJES",
                         icon: FontAwesomeIcons.newspaper,
-                        iconColor: Color(0xBBFFFFFF),
+                        iconColor: Theme.of(context).colorScheme.primaryContainer,
                         sectionId: 3,
                         route: "/news",
                       ),
-                      const HomeButton(
+                      HomeButton(
                         name: "WEBSITE",
                         icon: FontAwesomeIcons.globe,
-                        iconColor: Color(0xFF3855a2),
+                        iconColor: Theme.of(context).colorScheme.secondary,
                         sectionId: 1,
                         route: "https://www.dewaaiburg.be/",
                       ),
                       if (userLoggedIn) ...[
-                        const HomeButton(
+                        HomeButton(
                           name: "LEVENSBOOM",
                           icon: FontAwesomeIcons.tree,
-                          iconColor: Color(0xFF3855a2),
+                          iconColor: Theme.of(context).colorScheme.primaryContainer,
                           sectionId: 1,
                           route: "/treehome",
                         ),
-                        const HomeButton(
+                        HomeButton(
                           name: "GEGEVENS",
                           icon: FontAwesomeIcons.user,
-                          iconColor: Color(0xFF3855a2),
+                          iconColor: Theme.of(context).colorScheme.secondary,
                           sectionId: 1,
                           route: "/userdetails",
                         ),
@@ -130,30 +130,36 @@ class _HomeState extends State<Home> {
                 ),
               ),
               SizedBox(
-                  width: screenHeight,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.all(18.0),
-                      backgroundColor: Colors.white.withAlpha(64),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(30)),
-                      ),
+                width: screenHeight,
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.all(18.0),
+                    backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(30)),
                     ),
-                    onPressed: () {
-                      userLoggedIn ? logOut() : Navigator.pushNamed(context, '/login');
-                    },
-                    child: Text(
-                      userLoggedIn ? 'Uitloggen' : 'Inloggen',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white, shadows: [
+                  ),
+                  onPressed: () {
+                    userLoggedIn ? logOut() : Navigator.pushNamed(context, '/login');
+                  },
+                  child: Text(
+                    userLoggedIn ? 'Uitloggen' : 'Inloggen',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                      shadows: [
                         Shadow(
                           blurRadius: 5,
                           color: Colors.black45,
                           offset: Offset(0, 2),
                         )
-                      ]),
+                      ],
                     ),
-                  )),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

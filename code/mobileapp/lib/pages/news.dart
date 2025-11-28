@@ -56,7 +56,7 @@ class _NewsState extends State<News> {
       backgroundColor: Colors.transparent,
       appBar: Header(
         bgColor: Colors.transparent,
-        titleColor: 0xFFFFFFFF,
+        titleColor: Theme.of(context).colorScheme.onPrimary,
         title: FutureBuilder<List<Section>>(
           future: sections,
           builder: (context, snapshot) {
@@ -71,7 +71,7 @@ class _NewsState extends State<News> {
         ),
       ),
       body: Container(
-        color: const Color(0xFF46ae93),
+        color: Theme.of(context).colorScheme.primary,
         child: RefreshIndicator(
           onRefresh: _refreshNews,
           child: FutureBuilder<List<dynamic>>(

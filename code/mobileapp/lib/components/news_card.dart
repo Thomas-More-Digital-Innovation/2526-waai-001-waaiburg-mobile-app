@@ -38,8 +38,8 @@ class NewsCard extends StatelessWidget {
               child: Text(
                 textAlign: TextAlign.center,
                 title,
-                style: const TextStyle(
-                  color: Color(0xFF3855a2),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
                 ),

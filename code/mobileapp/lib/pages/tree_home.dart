@@ -304,9 +304,9 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                 top: 20,
                 left: 10,
                 child: IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.home_rounded,
-                    color: Color(0xFF3855a2),
+                    color: Theme.of(context).colorScheme.secondary,
                     weight: 0.9,
                   ),
                   iconSize: 55,
@@ -324,7 +324,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                       ),
                       padding: const EdgeInsets.all(16.0), // Adjust the padding as needed
                       margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Column(
@@ -334,20 +334,20 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF3855a2), // Adjust text color as needed
+                                  color: Theme.of(context).colorScheme.secondary, // Adjust text color as needed
                                 ),
                               ),
-                              SizedBox(height: 7),
+                              const SizedBox(height: 7),
                               Text(
                                 "Je hebt alle vragen ingevuld,\nje boom is nu volgroeid.",
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Color(0xFF3855a2), // Adjust text color as needed
+                                  color: Theme.of(context).colorScheme.secondary, // Adjust text color as needed
                                 ),
                                 textAlign: TextAlign.center,
                               ),
-                              SizedBox(height: 4),
-                              Text(
+                              const SizedBox(height: 4),
+                              const Text(
                                 "Scroll gerust terug om te kijken wat je \n antwoorden waren tijdens de groei van je boom",
                                 style: TextStyle(
                                   fontSize: 12,
@@ -420,9 +420,9 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                 child: IconButton(
                   icon: Transform.rotate(
                     angle: 45,
-                    child: const Icon(
+                    child: Icon(
                       Icons.play_arrow_rounded,
-                      color: Color(0xFF3855a2),
+                      color: Theme.of(context).colorScheme.secondary,
                       weight: 0.9,
                     ),
                   ),
@@ -451,7 +451,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                   right: null,
                   child: TextButton(
                     style: TextButton.styleFrom(
-                      backgroundColor: const Color(0xFF3855a2),
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
                     ),
                     onPressed: () {
                       if (questionsList!.isNotEmpty) {
@@ -480,9 +480,9 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                     bottom: 20, // Adjust the position as needed
                     right: 10, // Adjust the position as needed
                     child: IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.play_arrow_rounded,
-                        color: Color(0xFF3855a2),
+                        color: Theme.of(context).colorScheme.secondary,
                         weight: 0.9,
                       ),
                       iconSize: 55,

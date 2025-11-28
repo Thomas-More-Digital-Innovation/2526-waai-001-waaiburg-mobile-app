@@ -69,10 +69,10 @@ class _MyWidgetState extends State<LoginPage> {
                 Container(
                   margin: const EdgeInsets.all(5.0),
                   padding: const EdgeInsets.all(15.0),
-                  decoration: BoxDecoration(color: Colors.red[100], borderRadius: const BorderRadius.all(Radius.circular(30))),
-                  child: const Text(
+                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.error, borderRadius: const BorderRadius.all(Radius.circular(30))),
+                  child: Text(
                     'Email of wachtwoord incorrect',
-                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onError, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -97,7 +97,7 @@ class _MyWidgetState extends State<LoginPage> {
                 },
                 child: Container(
                   height: 50,
-                  decoration: BoxDecoration(color: const Color(0xFFb1b4dc), borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.secondaryContainer, borderRadius: BorderRadius.circular(10)),
                   child: const Center(
                     child: Text('Login'),
                   ),
@@ -114,7 +114,7 @@ class _MyWidgetState extends State<LoginPage> {
                   },
                   child: Text(
                     'Wachtwoord vergeten?',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue[700]),
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary),
                   ),
                 ),
               ),

@@ -63,13 +63,13 @@ class _InfoContentSelectedState extends State<InfoContentSelected> {
                         child: Container(
                             margin: const EdgeInsets.all(20),
                             padding: const EdgeInsets.all(10),
-                            decoration: const BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                              color: Color(0xFF3855a2),
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(Radius.circular(10)),
+                              color: Theme.of(context).colorScheme.secondary,
                             ),
-                            child: const Text('Meer Info',
+                            child: Text('Meer Info',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: Theme.of(context).colorScheme.onPrimary,
                                   fontSize: 26,
                                   fontWeight: FontWeight.bold,
                                 ))),

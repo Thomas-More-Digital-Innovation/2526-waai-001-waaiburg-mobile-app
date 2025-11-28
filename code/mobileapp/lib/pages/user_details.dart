@@ -38,18 +38,18 @@ class _UserDetailsState extends State<UserDetails> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
-      appBar: const Header(
-        bgColor: Color(0xFF46ae93),
-        titleColor: 0xFFFFFFFF,
-        title: Text("Contactgegevens"),
+      appBar: Header(
+        bgColor: Theme.of(context).colorScheme.primary,
+        titleColor: Theme.of(context).colorScheme.onSurface,
+        title: const Text("Contactgegevens"),
       ),
       body: Container(
         height: double.infinity,
-        color: const Color(0xFF46ae93),
+        color: Theme.of(context).colorScheme.primary,
         child: SingleChildScrollView(
           child: SafeArea(
             child: Container(
-              color: const Color(0xFF46ae93),
+              color: Theme.of(context).colorScheme.primary,
               child: FutureBuilder<List<dynamic>>(
                 future: futureUser,
                 builder: (context, snapshot) {
@@ -69,12 +69,12 @@ class _UserDetailsState extends State<UserDetails> {
                                 onTap: () {
                                   launchUrlString("https://www.dewaaiburgapp.eu/user");
                                 },
-                                child: const Text(
+                                child: Text(
                                   "Gegevens aanpassen",
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.onPrimary,
                                     decoration: TextDecoration.underline,
-                                    decorationColor: Colors.white,
+                                    decorationColor: Theme.of(context).colorScheme.onPrimary,
                                   ),
                                 ),
                               ),
@@ -102,7 +102,7 @@ class _UserDetailsState extends State<UserDetails> {
       padding: const EdgeInsets.fromLTRB(30, 18, 30, 18),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(64),
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: const BorderRadius.all(Radius.circular(30)),
       ),
       child: Column(
@@ -111,9 +111,9 @@ class _UserDetailsState extends State<UserDetails> {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const FaIcon(
+              FaIcon(
                 FontAwesomeIcons.user,
-                color: Color(0xFF3855a2),
+                color: Theme.of(context).colorScheme.secondary,
                 size: 17,
               ),
               const SizedBox(
@@ -142,10 +142,10 @@ class _UserDetailsState extends State<UserDetails> {
       padding: const EdgeInsets.fromLTRB(30, 18, 30, 18),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(64),
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: const BorderRadius.all(Radius.circular(30)),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -153,17 +153,17 @@ class _UserDetailsState extends State<UserDetails> {
             children: [
               FaIcon(
                 FontAwesomeIcons.user,
-                color: Color(0xFF3855a2),
+                color: Theme.of(context).colorScheme.secondary,
                 size: 17,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 7,
               ),
-              Text("Begeleider"),
+              const Text("Begeleider"),
             ],
           ),
-          SizedBox(height: 15),
-          Text("Geen begeleider gekoppeld!"),
+          const SizedBox(height: 15),
+          const Text("Geen begeleider gekoppeld!"),
         ],
       ),
     );
@@ -191,7 +191,7 @@ class UserDetailsItemLabel extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(color: Color(0xFF3855a2)),
+          style: TextStyle(color: Theme.of(context).colorScheme.secondary),
         ),
         const SizedBox(height: 3),
         Text(value),

@@ -79,10 +79,10 @@ class ColumnTextButton extends StatelessWidget {
       child: Text(
         label,
         textAlign: TextAlign.center,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w600,
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.onPrimary,
         ),
       ),
     );
