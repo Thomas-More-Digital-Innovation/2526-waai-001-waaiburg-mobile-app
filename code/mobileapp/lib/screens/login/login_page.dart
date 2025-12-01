@@ -1,11 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart';
+import 'package:mobileapp/config/env.dart';
+import 'package:mobileapp/config/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../components/header.dart';
+import '../../shared/widgets/header.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -21,9 +24,7 @@ class _MyWidgetState extends State<LoginPage> {
 
   void login(String email, String password) async {
     try {
-      Response response = await post(
-          Uri.parse('https://dewaaiburgapp.eu/api/auth/login'),
-          body: {'email': email, 'password': password});
+      Response response = await post(Uri.parse('$apiUrl/auth/login'), body: {'email': email, 'password': password});
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body.toString());
         // Save the user token to shared preferences
@@ -33,7 +34,7 @@ class _MyWidgetState extends State<LoginPage> {
         Map<String, dynamic> userData = data['User'];
         prefs.setInt('userId', userData['id']);
 
-        Navigator.pushNamed(context, '/home');
+        context.go(AppRoutes.home);
       } else {
         setState(() {
           failedLogin = true;
@@ -42,9 +43,13 @@ class _MyWidgetState extends State<LoginPage> {
         });
       }
     } catch (e) {
-      // TODO: show error
-      print("THERE WAS AN EXCEPTION: ");
-      print(e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to login, please try again.")),
+        );
+      }
+      debugPrint("THERE WAS AN EXCEPTION: ");
+      debugPrint(e.toString());
     }
   }
 
@@ -70,14 +75,10 @@ class _MyWidgetState extends State<LoginPage> {
                 Container(
                   margin: const EdgeInsets.all(5.0),
                   padding: const EdgeInsets.all(15.0),
-                  decoration: BoxDecoration(
-                      color: Colors.red[100],
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(30))),
-                  child: const Text(
+                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.error, borderRadius: const BorderRadius.all(Radius.circular(30))),
+                  child: Text(
                     'Email of wachtwoord incorrect',
-                    style: TextStyle(
-                        color: Colors.red, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onError, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -98,14 +99,11 @@ class _MyWidgetState extends State<LoginPage> {
               ),
               GestureDetector(
                 onTap: () {
-                  login(emailController.text.toString(),
-                      passwordController.text.toString());
+                  login(emailController.text.toString(), passwordController.text.toString());
                 },
                 child: Container(
                   height: 50,
-                  decoration: BoxDecoration(
-                      color: const Color(0xFFb1b4dc),
-                      borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.secondaryContainer, borderRadius: BorderRadius.circular(10)),
                   child: const Center(
                     child: Text('Login'),
                   ),
@@ -118,13 +116,11 @@ class _MyWidgetState extends State<LoginPage> {
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
                   onTap: () {
-                    launchUrl(
-                        Uri.parse("https://dewaaiburgapp.eu/forgot-password"));
+                    launchUrl(Uri.parse(forgotPasswordUrl));
                   },
                   child: Text(
                     'Wachtwoord vergeten?',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.blue[700]),
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary),
                   ),
                 ),
               ),

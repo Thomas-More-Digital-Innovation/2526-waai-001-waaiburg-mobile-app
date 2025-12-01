@@ -1,47 +1,51 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:async';
 
-Future<List<InfoSegment>> fetchInfoSegments() async {
-  final response = await http.get(Uri.parse('https://dewaaiburgapp.eu/api/info'));
+import 'package:http/http.dart' as http;
+import 'package:mobileapp/config/env.dart';
+import 'package:mobileapp/model/info_segment.dart';
+import 'package:mobileapp/model/info_content.dart';
+import 'package:mobileapp/model/sortable.dart';
 
-  if (response.statusCode == 200) {
-    Iterable infoSegments = jsonDecode(response.body)["info's"][0];
-    List<InfoSegment> infoSegmentsList = List<InfoSegment>.from(
-        infoSegments.map((model) => InfoSegment.fromJson(model)));
-    infoSegmentsList.sort((a, b) =>
-        (a.orderNumber ?? 0).toInt().compareTo((b.orderNumber ?? 0).toInt()));
-    return infoSegmentsList;
-  } else {
+Future<List<T>> _fetchList<T extends Sortable>({
+  required String endpoint,
+  required String jsonKey,
+  required T Function(Map<String, dynamic>) fromJson,
+}) async {
+  final response = await http.get(Uri.parse('$apiUrl/$endpoint'));
+
+  if (response.statusCode != 200) {
     throw Exception(response.reasonPhrase);
   }
+
+  final decoded = jsonDecode(response.body);
+
+  if (!decoded.containsKey(jsonKey)) {
+    throw Exception("JSON key '$jsonKey' not found.");
+  }
+
+  final Iterable rawList = decoded[jsonKey][0];
+
+  final List<T> models = rawList.map((item) => fromJson(item as Map<String, dynamic>)).toList().cast<T>();
+
+  models.sort(
+    (a, b) => (a.orderNumber ?? 0).compareTo(b.orderNumber ?? 0),
+  );
+
+  return models;
 }
 
-class InfoSegment {
-  final int id;
-  final int sectionId;
-  final String title;
-  final int? orderNumber;
-  final String? createdAt;
-  final String? updatedAt;
+Future<List<InfoSegment>> fetchInfoSegments() {
+  return _fetchList<InfoSegment>(
+    endpoint: 'info',
+    jsonKey: "info's",
+    fromJson: InfoSegment.fromJson,
+  );
+}
 
-  const InfoSegment({
-    required this.id,
-    required this.sectionId,
-    required this.title,
-    this.orderNumber,
-    this.createdAt,
-    this.updatedAt,
-  });
-
-  factory InfoSegment.fromJson(Map<String, dynamic> json) {
-    return InfoSegment(
-      id: json['id'],
-      sectionId: json['section_id'],
-      title: json['title'],
-      orderNumber: json['orderNumber'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-    );
-  }
+Future<List<InfoContent>> fetchInfoContents() {
+  return _fetchList<InfoContent>(
+    endpoint: 'infoContent',
+    jsonKey: 'infoContents',
+    fromJson: InfoContent.fromJson,
+  );
 }

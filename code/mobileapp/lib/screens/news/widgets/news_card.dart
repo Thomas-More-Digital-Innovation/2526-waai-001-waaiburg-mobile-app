@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobileapp/config/routes.dart';
 
-class ListCard extends StatelessWidget {
-  const ListCard(
-      {required this.route,
-      required this.infoId,
-      required this.title,
-      required this.subText,
-      required this.date,
-      super.key});
+class NewsCard extends StatelessWidget {
+  const NewsCard({required this.infoId, required this.title, required this.subText, required this.date, super.key});
 
-  final String route;
   final int infoId;
   final String title;
   final String subText;
@@ -20,21 +15,13 @@ class ListCard extends StatelessWidget {
     final double width = MediaQuery.of(context).size.width;
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          route,
-          arguments: <String, dynamic>{
-            'infoId': infoId,
-            'route': route,
-          },
-        );
+        context.push(AppRoutes.infoContentSelectPath(infoId, title: title));
       },
       child: Card(
         margin: EdgeInsets.symmetric(horizontal: width * 0.1, vertical: 18.0),
         elevation: 5,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          //set border radius more than 50% of height and width to make circle
         ),
         child: Column(
           children: [
@@ -43,8 +30,8 @@ class ListCard extends StatelessWidget {
               child: Text(
                 textAlign: TextAlign.center,
                 title,
-                style: const TextStyle(
-                  color: Color(0xFF3855a2),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
                 ),

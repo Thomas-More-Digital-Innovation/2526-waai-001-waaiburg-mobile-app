@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobileapp/api/user.dart';
-import 'package:mobileapp/components/header.dart';
+import 'package:mobileapp/shared/widgets/header.dart';
+import 'package:mobileapp/shared/widgets/page_content_loading_indicator.dart';
+import 'package:mobileapp/model/user.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class UserDetails extends StatefulWidget {
@@ -37,23 +39,22 @@ class _UserDetailsState extends State<UserDetails> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
-      appBar: const Header(
-        bgcolor: Color(0xFF46ae93),
-        titleColor: 0xFFFFFFFF,
-        title: Text("Contactgegevens"),
+      appBar: Header(
+        bgColor: Theme.of(context).colorScheme.primary,
+        titleColor: Theme.of(context).colorScheme.onSurface,
+        title: const Text("Contactgegevens"),
       ),
       body: Container(
         height: double.infinity,
-        color: const Color(0xFF46ae93),
+        color: Theme.of(context).colorScheme.primary,
         child: SingleChildScrollView(
           child: SafeArea(
             child: Container(
-              color: const Color(0xFF46ae93),
+              color: Theme.of(context).colorScheme.primary,
               child: FutureBuilder<List<dynamic>>(
                 future: futureUser,
                 builder: (context, snapshot) {
-                  if (snapshot.hasData &&
-                      snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
                     User user = snapshot.data![0];
                     User? mentor = snapshot.data![1];
                     return Column(
@@ -67,28 +68,25 @@ class _UserDetailsState extends State<UserDetails> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  launchUrlString(
-                                      "https://www.dewaaiburgapp.eu/user");
+                                  launchUrlString("https://www.dewaaiburgapp.eu/user");
                                 },
-                                child: const Text(
+                                child: Text(
                                   "Gegevens aanpassen",
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.onPrimary,
                                     decoration: TextDecoration.underline,
-                                    decorationColor: Colors.white,
+                                    decorationColor: Theme.of(context).colorScheme.onPrimary,
                                   ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        mentor != null
-                            ? _buildUserDetailsBox(mentor, "Begeleider")
-                            : _buildNoMentorBox(),
+                        mentor != null ? _buildUserDetailsBox(mentor, "Begeleider") : _buildNoMentorBox(),
                       ],
                     );
                   } else {
-                    return const Center(child: CircularProgressIndicator());
+                    return const PageContentLoadingIndicator();
                   }
                 },
               ),
@@ -105,7 +103,7 @@ class _UserDetailsState extends State<UserDetails> {
       padding: const EdgeInsets.fromLTRB(30, 18, 30, 18),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(64),
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: const BorderRadius.all(Radius.circular(30)),
       ),
       child: Column(
@@ -114,9 +112,9 @@ class _UserDetailsState extends State<UserDetails> {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const FaIcon(
+              FaIcon(
                 FontAwesomeIcons.user,
-                color: Color(0xFF3855a2),
+                color: Theme.of(context).colorScheme.secondary,
                 size: 17,
               ),
               const SizedBox(
@@ -126,7 +124,7 @@ class _UserDetailsState extends State<UserDetails> {
             ],
           ),
           const SizedBox(height: 15),
-          UserDetailsItemLabel("Voornaam:", user?.firstname ?? ''),
+          UserDetailsItemLabel("Voornaam:", user?.firstName ?? ''),
           UserDetailsItemLabel("Achternaam:", user?.surname ?? ''),
           UserDetailsItemLabel("E-mail:", user?.email ?? ''),
           UserDetailsItemLabel(
@@ -145,10 +143,10 @@ class _UserDetailsState extends State<UserDetails> {
       padding: const EdgeInsets.fromLTRB(30, 18, 30, 18),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(64),
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: const BorderRadius.all(Radius.circular(30)),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -156,17 +154,17 @@ class _UserDetailsState extends State<UserDetails> {
             children: [
               FaIcon(
                 FontAwesomeIcons.user,
-                color: Color(0xFF3855a2),
+                color: Theme.of(context).colorScheme.secondary,
                 size: 17,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 7,
               ),
-              Text("Begeleider"),
+              const Text("Begeleider"),
             ],
           ),
-          SizedBox(height: 15),
-          Text("Geen begeleider gekoppeld!"),
+          const SizedBox(height: 15),
+          const Text("Geen begeleider gekoppeld!"),
         ],
       ),
     );
@@ -174,11 +172,7 @@ class _UserDetailsState extends State<UserDetails> {
 }
 
 String getAddress(User? user) {
-  if (user != null &&
-      user.street != null &&
-      user.houseNumber != null &&
-      user.zipcode != null &&
-      user.city != null) {
+  if (user != null && user.street != null && user.houseNumber != null && user.zipcode != null && user.city != null) {
     return '${user.street} ${user.houseNumber},\n${user.zipcode} ${user.city}';
   } else {
     return 'Adresgegevens ontbreken';
@@ -189,8 +183,7 @@ class UserDetailsItemLabel extends StatelessWidget {
   final String label;
   final String value;
 
-  const UserDetailsItemLabel(this.label, this.value, {Key? key})
-      : super(key: key);
+  const UserDetailsItemLabel(this.label, this.value, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +192,7 @@ class UserDetailsItemLabel extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(color: Color(0xFF3855a2)),
+          style: TextStyle(color: Theme.of(context).colorScheme.secondary),
         ),
         const SizedBox(height: 3),
         Text(value),
