@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobileapp/api/user.dart';
+import 'package:mobileapp/screens/user_details/widgets/no_mentor_box.dart';
+import 'package:mobileapp/screens/user_details/widgets/user_detail_box.dart';
 import 'package:mobileapp/shared/widgets/header.dart';
 import 'package:mobileapp/shared/widgets/page_content_loading_indicator.dart';
 import 'package:mobileapp/model/user.dart';
@@ -41,7 +42,7 @@ class _UserDetailsState extends State<UserDetails> {
       backgroundColor: Colors.transparent,
       appBar: Header(
         bgColor: Theme.of(context).colorScheme.primary,
-        titleColor: Theme.of(context).colorScheme.onSurface,
+        titleColor: Theme.of(context).colorScheme.onPrimary,
         title: const Text("Contactgegevens"),
       ),
       body: Container(
@@ -60,7 +61,7 @@ class _UserDetailsState extends State<UserDetails> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildUserDetailsBox(user, "Cliënt"),
+                        UserDetailBox(title: "Cliënt", user: user),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0, 0, 18, 0),
                           child: Row(
@@ -82,7 +83,7 @@ class _UserDetailsState extends State<UserDetails> {
                             ],
                           ),
                         ),
-                        mentor != null ? _buildUserDetailsBox(mentor, "Begeleider") : _buildNoMentorBox(),
+                        mentor != null ? UserDetailBox(title: "Begeleider", user: mentor) : NoMentorBox(),
                       ],
                     );
                   } else {
@@ -96,79 +97,6 @@ class _UserDetailsState extends State<UserDetails> {
       ),
     );
   }
-
-  Widget _buildUserDetailsBox(User? user, String title) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-      padding: const EdgeInsets.fromLTRB(30, 18, 30, 18),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
-        borderRadius: const BorderRadius.all(Radius.circular(30)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              FaIcon(
-                FontAwesomeIcons.user,
-                color: Theme.of(context).colorScheme.secondary,
-                size: 17,
-              ),
-              const SizedBox(
-                width: 7,
-              ),
-              Text(title),
-            ],
-          ),
-          const SizedBox(height: 15),
-          UserDetailsItemLabel("Voornaam:", user?.firstName ?? ''),
-          UserDetailsItemLabel("Achternaam:", user?.surname ?? ''),
-          UserDetailsItemLabel("E-mail:", user?.email ?? ''),
-          UserDetailsItemLabel(
-            "Telefoonnummer:",
-            user?.phoneNumber ?? 'Geen telefoonnummer opgegeven.',
-          ),
-          UserDetailsItemLabel("Adres:", getAddress(user)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNoMentorBox() {
-    return Container(
-      margin: const EdgeInsets.all(20.0),
-      padding: const EdgeInsets.fromLTRB(30, 18, 30, 18),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
-        borderRadius: const BorderRadius.all(Radius.circular(30)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              FaIcon(
-                FontAwesomeIcons.user,
-                color: Theme.of(context).colorScheme.secondary,
-                size: 17,
-              ),
-              const SizedBox(
-                width: 7,
-              ),
-              const Text("Begeleider"),
-            ],
-          ),
-          const SizedBox(height: 15),
-          const Text("Geen begeleider gekoppeld!"),
-        ],
-      ),
-    );
-  }
 }
 
 String getAddress(User? user) {
@@ -176,28 +104,5 @@ String getAddress(User? user) {
     return '${user.street} ${user.houseNumber},\n${user.zipcode} ${user.city}';
   } else {
     return 'Adresgegevens ontbreken';
-  }
-}
-
-class UserDetailsItemLabel extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const UserDetailsItemLabel(this.label, this.value, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-        ),
-        const SizedBox(height: 3),
-        Text(value),
-        const SizedBox(height: 7),
-      ],
-    );
   }
 }
