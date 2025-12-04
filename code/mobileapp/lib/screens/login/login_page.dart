@@ -34,7 +34,13 @@ class _MyWidgetState extends State<LoginPage> {
         Map<String, dynamic> userData = data['User'];
         prefs.setInt('userId', userData['id']);
 
-        context.go(AppRoutes.home);
+        // If this page was pushed onto the stack, pop and return true to the caller
+        if (Navigator.of(context).canPop()) {
+          context.pop(true);
+        } else {
+          // Otherwise, navigate to the home route which will recreate the Home widget and therefore refresh state
+          context.go(AppRoutes.home);
+        }
       } else {
         setState(() {
           failedLogin = true;

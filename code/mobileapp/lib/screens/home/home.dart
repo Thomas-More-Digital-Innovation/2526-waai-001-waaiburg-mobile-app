@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobileapp/config/routes.dart';
@@ -30,6 +31,7 @@ class _HomeState extends State<Home> {
 
   Future<void> loadLoggedInState() async {
     bool loggedIn = await isLoggedIn();
+    debugPrint('User logged in: $loggedIn');
     setState(() {
       userLoggedIn = loggedIn;
     });
@@ -56,7 +58,7 @@ class _HomeState extends State<Home> {
       body: Container(
         color: Theme.of(context).colorScheme.primary,
         child: Container(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -80,6 +82,7 @@ class _HomeState extends State<Home> {
                     mainAxisSpacing: 20,
                     crossAxisSpacing: 18,
                     childAspectRatio: 1,
+                    padding: const EdgeInsets.all(0),
                     primary: false,
                     shrinkWrap: false,
                     children: [
@@ -115,14 +118,14 @@ class _HomeState extends State<Home> {
                         HomeButton(
                           name: "LEVENSBOOM",
                           icon: FontAwesomeIcons.tree,
-                          iconColor: Theme.of(context).colorScheme.primaryContainer,
+                          iconColor: Theme.of(context).colorScheme.secondary,
                           sectionId: 0,
                           route: AppRoutes.treeHome,
                         ),
                         HomeButton(
                           name: "GEGEVENS",
                           icon: FontAwesomeIcons.user,
-                          iconColor: Theme.of(context).colorScheme.secondary,
+                          iconColor: Theme.of(context).colorScheme.primaryContainer,
                           sectionId: 0,
                           route: AppRoutes.userDetails,
                         ),
@@ -131,33 +134,44 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-              SizedBox(
-                width: screenHeight,
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.all(18.0),
-                    backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
+              Padding(
+                padding: EdgeInsetsGeometry.only(top: 12),
+                child: SizedBox(
+                  width: screenHeight,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.all(12.0),
+                      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                      ),
                     ),
-                  ),
-                  onPressed: () {
-                    userLoggedIn ? logOut() : context.push(AppRoutes.login);
-                  },
-                  child: Text(
-                    userLoggedIn ? 'Uitloggen' : 'Inloggen',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 5,
-                          color: Colors.black45,
-                          offset: Offset(0, 2),
-                        )
-                      ],
+                    onPressed: () async {
+                      if (userLoggedIn) {
+                        logOut();
+                      } else {
+                        // Push the login page and wait for a result; if true is returned, reload login state
+                        final result = await context.push(AppRoutes.login);
+                        if (result == true) {
+                          await loadLoggedInState();
+                        }
+                      }
+                    },
+                    child: Text(
+                      userLoggedIn ? 'Uitloggen' : 'Inloggen',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 5,
+                            color: Colors.black45,
+                            offset: Offset(0, 2),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
