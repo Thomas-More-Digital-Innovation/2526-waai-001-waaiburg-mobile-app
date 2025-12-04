@@ -46,53 +46,46 @@ class _UserDetailsState extends State<UserDetails> {
         title: const Text("Contactgegevens"),
       ),
       body: Container(
-        height: double.infinity,
         color: Theme.of(context).colorScheme.primary,
-        child: SingleChildScrollView(
-          child: SafeArea(
-            child: Container(
-              color: Theme.of(context).colorScheme.primary,
-              child: FutureBuilder<List<dynamic>>(
-                future: futureUser,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
-                    User user = snapshot.data![0];
-                    User? mentor = snapshot.data![1];
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        child: FutureBuilder<List<dynamic>>(
+          future: futureUser,
+          builder: (context, snapshot) {
+            if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
+              User user = snapshot.data![0];
+              User? mentor = snapshot.data![1];
+              return ListView(
+                children: [
+                  UserDetailBox(title: "Cliënt", user: user),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 18, 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        UserDetailBox(title: "Cliënt", user: user),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 18, 0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  launchUrlString("https://www.dewaaiburgapp.eu/user");
-                                },
-                                child: Text(
-                                  "Gegevens aanpassen",
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onPrimary,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: Theme.of(context).colorScheme.onPrimary,
-                                  ),
-                                ),
-                              ),
-                            ],
+                        GestureDetector(
+                          onTap: () {
+                            launchUrlString("https://www.dewaaiburgapp.eu/user");
+                          },
+                          child: Text(
+                            "Gegevens aanpassen",
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimary,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Theme.of(context).colorScheme.onPrimary,
+                            ),
                           ),
                         ),
-                        mentor != null ? UserDetailBox(title: "Begeleider", user: mentor) : NoMentorBox(),
                       ],
-                    );
-                  } else {
-                    return const PageContentLoadingIndicator();
-                  }
-                },
-              ),
-            ),
-          ),
+                    ),
+                  ),
+                  mentor != null ? UserDetailBox(title: "Begeleider", user: mentor) : NoMentorBox(),
+                ],
+              );
+            } else {
+              return PageContentLoadingIndicator(
+                color: Theme.of(context).colorScheme.secondary,
+              );
+            }
+          },
         ),
       ),
     );
