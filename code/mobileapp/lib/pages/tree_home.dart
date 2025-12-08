@@ -1,18 +1,16 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mobileapp/api/question_list.dart';
-import 'package:mobileapp/model/qna.dart';
-import 'package:mobileapp/screens/tree/tree_constants.dart';
-import 'package:mobileapp/screens/tree/widgets/chat_bubble.dart';
-import 'package:mobileapp/screens/tree/widgets/completion_message.dart';
-import 'package:mobileapp/screens/tree/widgets/input_bubble.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 class TreeHome extends StatefulWidget {
-  const TreeHome({super.key});
+  const TreeHome({Key? key}) : super(key: key);
 
   @override
   State<TreeHome> createState() => _TreeHomeState();
@@ -62,7 +60,8 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
     answersList = questionAnswerList[1];
 
     // Find the index of the first unanswered question
-    int indexOfFirstUnansweredQuestion = questionsList!.indexWhere((question) => answersList!.every((answer) => answer.questionId != question.id));
+    int indexOfFirstUnansweredQuestion = questionsList!.indexWhere((question) =>
+        answersList!.every((answer) => answer.questionId != question.id));
 
     //go to the last filled in question because nicer user experience
     if (indexOfFirstUnansweredQuestion > 0) {
@@ -71,7 +70,9 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
 
     // Set currentQuestionIndex to the found index, or 0 if no unanswered questions are found
     setState(() {
-      currentQuestionIndex = indexOfFirstUnansweredQuestion >= 0 ? indexOfFirstUnansweredQuestion : questionsList!.length - 1;
+      currentQuestionIndex = indexOfFirstUnansweredQuestion >= 0
+          ? indexOfFirstUnansweredQuestion
+          : questionsList!.length - 1;
     });
 
     // set the current tree part index to the found index, or 0 if no unanswered questions are found
@@ -103,7 +104,8 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
   }
 
   void _goToNextQuestion() {
-    if (questionsList != null && currentQuestionIndex < questionsList!.length - 1) {
+    if (questionsList != null &&
+        currentQuestionIndex < questionsList!.length - 1) {
       setState(() {
         currentQuestionIndex++;
         isInputVisible = false;
@@ -138,17 +140,30 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
     isInputVisible = false;
   }
 
+  final treeStates = const {
+    0: 'begin',
+    1: 'zaadje',
+    2: 'stam',
+    3: 'takken',
+    4: 'bladeren',
+    5: 'appels',
+    6: 'vogels',
+    7: 'last'
+  };
+
   void _updateTreeState(String direction) async {
     final Completer<void> completer = Completer<void>();
 
     setState(() {
       if (direction == "Forward") {
-        if (_state < TreeConstants.maxTreeState) {
+        if (_state < 6) {
           _state += 1;
+          // Reset the controller to the beginning after the state update.
         }
       } else if (direction == "Backward") {
-        if (_state > TreeConstants.minTreeState) {
+        if (_state > 0) {
           _state -= 1;
+          // Reset the controller to the beginning after the state update.
         }
       }
     });
@@ -179,19 +194,21 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
   Future<void> _loadVideo() async {
     try {
       _videoPlayerController = VideoPlayerController.asset(
-        TreeConstants.getVideoPath(_state),
+        'assets/tree_of_life/${treeStates[_state]}.mp4',
       );
 
       await _videoPlayerController.initialize();
     } catch (error) {
       print('Error initializing video player: $error');
+      // Handle the error as needed
     }
   }
 
   void _initializeChewieController() {
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
-      aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
+      aspectRatio: MediaQuery.of(context).size.width /
+          MediaQuery.of(context).size.height,
       autoInitialize: true,
       autoPlay: true,
       looping: false,
@@ -205,10 +222,10 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
 
   Future<void> _loadImages() async {
     final precacheTasks = <Future>[];
-    for (var i = 1; i <= TreeConstants.maxTreeState; i++) {
+    for (var i = 1; i <= 6; i++) {
       precacheTasks.add(
         precacheImage(
-          AssetImage(TreeConstants.getImagePath(i)),
+          AssetImage('assets/tree_of_life/${treeStates[i]}.png'),
           context,
         ),
       );
@@ -236,9 +253,10 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
         } else if (snapshot.hasError) {
           print("Error loading video: ${snapshot.error}");
           return AspectRatio(
-            aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
+            aspectRatio: MediaQuery.of(context).size.width /
+                MediaQuery.of(context).size.height,
             child: Image.asset(
-              TreeConstants.getImagePath(_state),
+              'assets/tree_of_life/${treeStates[_state]}.png',
               fit: BoxFit.fill,
             ),
           );
@@ -254,7 +272,8 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
     if (questionsList != null && questionsList!.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         // Get the RenderBox for the speech bubble widget using the GlobalKey
-        final RenderBox renderBox = _speechBubbleKey.currentContext!.findRenderObject() as RenderBox;
+        final RenderBox renderBox =
+            _speechBubbleKey.currentContext!.findRenderObject() as RenderBox;
 
         // Calculate the top position by adding the height of the speech bubble
         setState(() {
@@ -279,9 +298,10 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
             children: [
               // Background image (tree)
               AspectRatio(
-                aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
+                aspectRatio: MediaQuery.of(context).size.width /
+                    MediaQuery.of(context).size.height,
                 child: Image.asset(
-                  TreeConstants.getImagePath(_state > 0 ? _state - 1 : _state),
+                  'assets/tree_of_life/${_state > 0 ? treeStates[_state - 1] : treeStates[_state]}.png',
                   fit: BoxFit.fill,
                 ),
               ),
@@ -290,9 +310,10 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
               treeStateChanged
                   ? buildChewieWidget()
                   : AspectRatio(
-                      aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
+                      aspectRatio: MediaQuery.of(context).size.width /
+                          MediaQuery.of(context).size.height,
                       child: Image.asset(
-                        TreeConstants.getImagePath(_state),
+                        'assets/tree_of_life/${treeStates[_state]}.png',
                         fit: BoxFit.fill,
                       ),
                     ),
@@ -300,16 +321,70 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                 top: 20,
                 left: 10,
                 child: IconButton(
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.home_rounded,
-                    color: Theme.of(context).colorScheme.secondary,
+                    color: Color(0xFF3855a2),
                     weight: 0.9,
                   ),
                   iconSize: 55,
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ),
-              if (allQuestionsFilledIn) const CompletionMessage(),
+              if (allQuestionsFilledIn)
+                Column(
+                  children: [
+                    const SizedBox(height: 85),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(
+                            0.6), // Set your desired background color and opacity
+                        borderRadius: BorderRadius.circular(
+                            20.0), // Adjust the radius as needed
+                      ),
+                      padding: const EdgeInsets.all(
+                          16.0), // Adjust the padding as needed
+                      margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                "Proficiat!",
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(
+                                      0xFF3855a2), // Adjust text color as needed
+                                ),
+                              ),
+                              SizedBox(height: 7),
+                              Text(
+                                "Je hebt alle vragen ingevuld,\nje boom is nu volgroeid.",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color(
+                                      0xFF3855a2), // Adjust text color as needed
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                "Scroll gerust terug om te kijken wat je \n antwoorden waren tijdens de groei van je boom",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors
+                                      .black, // Adjust text color as needed
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
 
               // Speech Bubble
               if (!allQuestionsFilledIn)
@@ -318,11 +393,12 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                   top: 100,
                   left: 30,
                   child: questionsList == null
-                      ? const CircularProgressIndicator() // TODO: Replace with loading indicator
+                      ? const CircularProgressIndicator()
                       : questionsList!.isEmpty
                           ? const Text("Geen actieve vragenlijst gevonden!")
                           : ChatBubble(
-                              message: questionsList![currentQuestionIndex].content,
+                              message:
+                                  questionsList![currentQuestionIndex].content,
                               horizontalPadding: 40,
                               verticalPadding: 20,
                               backgroundColor: Colors.white,
@@ -347,7 +423,9 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
               // Input bubble
               if (isInputVisible)
                 Positioned(
-                  bottom: isKeyboardVisible ? 350 : 90, // Adjust the position as needed
+                  bottom: isKeyboardVisible
+                      ? 350
+                      : 90, // Adjust the position as needed
                   left: MediaQuery.of(context).size.width / 2 - 150,
                   child: InputBubble(
                     answer: answer,
@@ -368,9 +446,9 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                 child: IconButton(
                   icon: Transform.rotate(
                     angle: 45,
-                    child: Icon(
+                    child: const Icon(
                       Icons.play_arrow_rounded,
-                      color: Theme.of(context).colorScheme.secondary,
+                      color: Color(0xFF3855a2),
                       weight: 0.9,
                     ),
                   ),
@@ -378,7 +456,8 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                   onPressed: () {
                     _goToPreviousQuestion();
                     if (questionsList != null && questionsList!.isNotEmpty) {
-                      if (currentTreePartIndex < questionsList![currentQuestionIndex].treePartId) {
+                      if (currentTreePartIndex <
+                          questionsList![currentQuestionIndex].treePartId) {
                         setState(() {
                           treeStateChanged = true;
                         });
@@ -395,11 +474,12 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                 // Antwoord
                 Positioned(
                   bottom: 30,
-                  left: MediaQuery.of(context).size.width / 2 - 50, // Center Horizontally
+                  left: MediaQuery.of(context).size.width / 2 -
+                      50, // Center Horizontally
                   right: null,
                   child: TextButton(
                     style: TextButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      backgroundColor: const Color(0xFF3855a2),
                     ),
                     onPressed: () {
                       if (questionsList!.isNotEmpty) {
@@ -414,7 +494,8 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                     },
                     child: const Text(
                       'Antwoorden',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -428,16 +509,18 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                     bottom: 20, // Adjust the position as needed
                     right: 10, // Adjust the position as needed
                     child: IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.play_arrow_rounded,
-                        color: Theme.of(context).colorScheme.secondary,
+                        color: Color(0xFF3855a2),
                         weight: 0.9,
                       ),
                       iconSize: 55,
                       onPressed: () {
                         _goToNextQuestion();
-                        if (questionsList != null && questionsList!.isNotEmpty) {
-                          if (currentTreePartIndex < questionsList![currentQuestionIndex].treePartId) {
+                        if (questionsList != null &&
+                            questionsList!.isNotEmpty) {
+                          if (currentTreePartIndex <
+                              questionsList![currentQuestionIndex].treePartId) {
                             setState(() {
                               treeStateChanged = true;
                             });
@@ -452,5 +535,225 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+}
+
+// ... (rest of the code remains unchanged)
+
+class ChatBubble extends StatelessWidget {
+  final String message;
+  final double horizontalPadding;
+  final double verticalPadding;
+  final Color backgroundColor;
+  final Color textColor;
+  final double maxWidth;
+
+  const ChatBubble({
+    Key? key,
+    required this.message,
+    this.horizontalPadding = 16.0,
+    this.verticalPadding = 8.0,
+    this.backgroundColor = Colors.blue,
+    this.textColor = Colors.white,
+    this.maxWidth = 200.0,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipPath(
+      clipper: BubbleClipper(),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: horizontalPadding,
+          vertical: verticalPadding,
+        ),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+        ),
+        child: Container(
+          constraints: BoxConstraints(maxWidth: maxWidth),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              message,
+              style: TextStyle(color: textColor),
+              textAlign: TextAlign.justify,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class InputBubble extends StatefulWidget {
+  late Answer? answer;
+  final int questionId;
+  final Function reloadData;
+  final Function(bool) updateKeyboardVisibility;
+
+  InputBubble({
+    Key? key,
+    this.answer,
+    required this.questionId,
+    required this.reloadData,
+    required this.updateKeyboardVisibility,
+  }) : super(key: key);
+
+  @override
+  _InputBubbleState createState() => _InputBubbleState();
+}
+
+class _InputBubbleState extends State<InputBubble> {
+  final TextEditingController _textController = TextEditingController();
+  late final FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChange);
+    if (widget.answer != null) {
+      _textController.text = widget.answer!.answer;
+    }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    widget.updateKeyboardVisibility(_focusNode.hasFocus);
+  }
+
+  Future<void> _sendAnswer(String newAnswer) async {
+    String apiUrl = 'https://dewaaiburgapp.eu/api/answer'; // API URL
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.get('userToken');
+    final userId = prefs.get('userId');
+
+    if (widget.answer != null) {
+      widget.answer!.answer = newAnswer;
+      try {
+        final response = await http.put(
+          Uri.parse("$apiUrl/${widget.answer!.id}"),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'user_id': userId,
+            'question_id': widget.answer!.questionId,
+            'answer': widget.answer!.answer,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          print('Answer sent successfully');
+        } else {
+          print("Request failed with status: ${response.statusCode}");
+          throw Exception('Failed to send answer');
+        }
+      } catch (e) {
+        print("Request failed with exception: $e");
+        throw Exception('Failed to send answer');
+      }
+    } else {
+      try {
+        final response = await http.post(
+          Uri.parse(apiUrl),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'user_id': userId,
+            'question_id': widget.questionId,
+            'answer': newAnswer,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          print('Answer sent successfully');
+          widget.reloadData();
+        } else {
+          print("Request failed with status: ${response.statusCode}");
+          throw Exception('Failed to send answer');
+        }
+      } catch (e) {
+        print("Request failed with exception: $e");
+        throw Exception('Failed to send answer');
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SizedBox(
+          width: 300,
+          height: 50,
+          child: ClipPath(
+            clipper: BubbleClipper(),
+            child: Container(
+              color: Colors.white,
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      focusNode: _focusNode,
+                      controller: _textController,
+                      decoration: const InputDecoration.collapsed(
+                        hintText: 'Typ je antwoord...',
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.send),
+                    onPressed: () {
+                      // Handle sending the message
+                      final newAnswer = _textController.text;
+                      _sendAnswer(newAnswer);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class BubbleClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+
+    path.moveTo(size.width - 20, size.height);
+    path.quadraticBezierTo(
+        size.width, size.height, size.width, size.height - 20);
+
+    path.lineTo(size.width, 20);
+    path.quadraticBezierTo(size.width, 0, size.width - 20, 0);
+
+    path.lineTo(10, 0);
+    path.quadraticBezierTo(0, 0, 0, 20);
+
+    path.lineTo(0, size.height - 20);
+    path.quadraticBezierTo(0, size.height, 10, size.height);
+
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) {
+    return false;
   }
 }
