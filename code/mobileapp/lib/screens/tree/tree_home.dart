@@ -69,21 +69,15 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
       indexOfFirstUnansweredQuestion -= 1;
     }
 
-    // Set currentQuestionIndex to the found index, or 0 if no unanswered questions are found
-    setState(() {
-      currentQuestionIndex = indexOfFirstUnansweredQuestion >= 0 ? indexOfFirstUnansweredQuestion : questionsList!.length - 1;
-    });
-
-    // set the current tree part index to the found index, or 0 if no unanswered questions are found
-    setState(() {
-      currentTreePartIndex = questionsList![currentQuestionIndex].treePartId;
-    });
-    // set the current index to the current tree part index - 1 because the tree part index starts at 1
-    setState(() {
-      _state = currentTreePartIndex - 1;
-    });
-    // set the answer to the answer of the current question
-    setState((() => answer = _getAnswerValue(currentQuestionIndex)));
+    // Set all state in one batch to avoid multiple rebuilds
+    if (mounted) {
+      setState(() {
+        currentQuestionIndex = indexOfFirstUnansweredQuestion >= 0 ? indexOfFirstUnansweredQuestion : questionsList!.length - 1;
+        currentTreePartIndex = questionsList![currentQuestionIndex].treePartId;
+        _state = currentTreePartIndex - 1;
+        answer = _getAnswerValue(currentQuestionIndex);
+      });
+    }
   }
 
   void _goToPreviousQuestion() {
@@ -117,30 +111,30 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
   }
 
   Answer? _getAnswerValue(int questionIndex) {
-    if (questionIndex >= 0 && questionIndex < questionsList!.length) {
-      final currentQuestionId = questionsList![currentQuestionIndex].id;
-
-      try {
-        final answer = answersList!.firstWhere(
-          (answer) => answer.questionId == currentQuestionId,
-        );
-
-        return answer;
-      } catch (e) {
-        return null;
-      }
+    if (questionIndex < 0 || questionIndex >= (questionsList?.length ?? 0)) {
+      return null;
     }
-    return null;
+    
+    final currentQuestionId = questionsList![questionIndex].id;
+    try {
+      return answersList?.firstWhere(
+        (answer) => answer.questionId == currentQuestionId,
+      );
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<void> reloadAllData() async {
     await _initializeData();
-    isInputVisible = false;
+    if (mounted) {
+      setState(() {
+        isInputVisible = false;
+      });
+    }
   }
 
-  void _updateTreeState(String direction) async {
-    final Completer<void> completer = Completer<void>();
-
+  Future<void> _updateTreeState(String direction) async {
     setState(() {
       if (direction == "Forward") {
         if (_state < TreeConstants.maxTreeState) {
@@ -155,24 +149,26 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
 
     if (treeStateChanged) {
       // Load the images asynchronously
-      await _loadImages().then((_) {
-        completer.complete();
-      });
+      await _loadImages();
 
-      // Wait until the images are fully loaded before updating the video controller
-      await completer.future;
-
-      // Update the current tree part index
-      setState(() {
-        currentTreePartIndex = questionsList![currentQuestionIndex].treePartId;
-      });
+      if (mounted) {
+        setState(() {
+          currentTreePartIndex = questionsList![currentQuestionIndex].treePartId;
+        });
+      }
 
       try {
+        // Dispose old controller before creating new one
+        if (_videoPlayerController.value.isInitialized) {
+          await _videoPlayerController.pause();
+        }
         await _loadVideo();
+        if (mounted) {
+          _initializeChewieController();
+        }
       } catch (e) {
-        print("Error loading video: $e");
+        debugPrint("Error loading video: $e");
       }
-      _initializeChewieController();
     }
   }
 
@@ -184,7 +180,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
 
       await _videoPlayerController.initialize();
     } catch (error) {
-      print('Error initializing video player: $error');
+      debugPrint('Error initializing video player: $error');
     }
   }
 
@@ -217,8 +213,13 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
   }
 
   Widget buildChewieWidget() {
-    setState(() {
-      treeStateChanged = false;
+    // Schedule state change after build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && treeStateChanged) {
+        setState(() {
+          treeStateChanged = false;
+        });
+      }
     });
     return FutureBuilder<void>(
       future: _loadVideo(),
@@ -234,7 +235,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
             ),
           );
         } else if (snapshot.hasError) {
-          print("Error loading video: ${snapshot.error}");
+          debugPrint("Error loading video: ${snapshot.error}");
           return AspectRatio(
             aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
             child: Image.asset(
@@ -402,13 +403,9 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                       backgroundColor: Theme.of(context).colorScheme.secondary,
                     ),
                     onPressed: () {
-                      if (questionsList!.isNotEmpty) {
+                      if (questionsList?.isNotEmpty ?? false) {
                         setState(() {
-                          if (!isInputVisible) {
-                            isInputVisible = true;
-                          } else {
-                            isInputVisible = false;
-                          }
+                          isInputVisible = !isInputVisible;
                         });
                       }
                     },
