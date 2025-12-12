@@ -1,15 +1,19 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mobileapp/api/question_list.dart';
 import 'package:mobileapp/model/qna.dart';
+import 'package:mobileapp/model/avatar_configuration.dart';
 import 'package:mobileapp/screens/tree/tree_constants.dart';
 import 'package:mobileapp/screens/tree/widgets/chat_bubble.dart';
 import 'package:mobileapp/screens/tree/widgets/completion_message.dart';
 import 'package:mobileapp/screens/tree/widgets/input_bubble.dart';
+import 'package:mobileapp/screens/avatar/widgets/avatar_widget.dart';
 import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TreeHome extends StatefulWidget {
   const TreeHome({super.key});
@@ -37,11 +41,14 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
 
   late VideoPlayerController _videoPlayerController;
   late ChewieController _chewieController;
+  
+  AvatarConfiguration _avatarConfig = const AvatarConfiguration();
 
   @override
   void initState() {
     super.initState();
     _initializeData();
+    _loadAvatarConfig();
   }
 
   @override
@@ -49,6 +56,17 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
     _videoPlayerController.dispose();
     _chewieController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadAvatarConfig() async {
+    final prefs = await SharedPreferences.getInstance();
+    final configJson = prefs.getString('avatar_config');
+
+    if (mounted && configJson != null) {
+      setState(() {
+        _avatarConfig = AvatarConfiguration.fromJson(jsonDecode(configJson));
+      });
+    }
   }
 
   Future<void> _initializeData() async {
@@ -444,6 +462,27 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                       },
                     ),
                   ),
+              
+              // Avatar character (het mannetje)
+              Positioned(
+                bottom: 120,
+                right: -30,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/avatar').then((_) {
+                      // Reload avatar config when returning from customization
+                      _loadAvatarConfig();
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    child: AvatarWidget(
+                      config: _avatarConfig,
+                      size: 250,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
