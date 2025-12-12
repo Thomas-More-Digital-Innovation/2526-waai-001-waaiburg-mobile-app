@@ -134,49 +134,49 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsetsGeometry.only(top: 12),
-                child: SizedBox(
-                  width: screenHeight,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.all(12.0),
-                      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(30)),
-                      ),
-                    ),
-                    onPressed: () async {
-                      if (userLoggedIn) {
-                        logOut();
-                      } else {
-                        // Push the login page and wait for a result; if true is returned, reload login state
-                        final result = await context.push(AppRoutes.login);
-                        if (result == true) {
-                          await loadLoggedInState();
-                        }
-                      }
-                    },
-                    child: Text(
-                      userLoggedIn ? 'Uitloggen' : 'Inloggen',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 5,
-                            color: Colors.black45,
-                            offset: Offset(0, 2),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
             ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsetsGeometry.only(top: 12),
+        child: SizedBox(
+          width: screenHeight,
+          child: TextButton(
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.all(12.0),
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(30)),
+              ),
+            ),
+            onPressed: () async {
+              if (userLoggedIn) {
+                logOut();
+              } else {
+                // Push the login page and wait for a result; if true is returned, reload login state
+                final result = await context.push(AppRoutes.login);
+                if (result == true) {
+                  await loadLoggedInState();
+                }
+              }
+            },
+            child: Text(
+              userLoggedIn ? 'Uitloggen' : 'Inloggen',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5,
+                    color: Colors.black45,
+                    offset: Offset(0, 2),
+                  )
+                ],
+              ),
+            ),
           ),
         ),
       ),
