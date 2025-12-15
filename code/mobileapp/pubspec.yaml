@@ -77,6 +77,11 @@ flutter:
   assets:
     - assets/
     - assets/tree_of_life/
+    - assets/avatar/bodies/
+    - assets/avatar/shirts/
+    - assets/avatar/pants/
+    - assets/avatar/hair/
+    - assets/avatar/accessories/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

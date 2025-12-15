@@ -7,6 +7,7 @@ import 'package:mobileapp/screens/info_contents.dart';
 import 'package:mobileapp/screens/news/news.dart';
 import 'package:mobileapp/screens/tree/tree_home.dart';
 import 'package:mobileapp/screens/user_details.dart';
+import 'package:mobileapp/screens/avatar/avatar_customization_screen.dart';
 
 /// Route paths as constants to avoid typos and enable autocomplete
 abstract class AppRoutes {
@@ -15,6 +16,7 @@ abstract class AppRoutes {
   static const String news = '/news';
   static const String treeHome = '/tree';
   static const String userDetails = '/user';
+  static const String avatar = '/avatar';
 
   // Info routes with parameters
   static const String infoSegments = '/info/:sectionId';
@@ -61,6 +63,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.userDetails,
       builder: (context, state) => const UserDetails(),
+    ),
+    GoRoute(
+      path: AppRoutes.avatar,
+      builder: (context, state) => const AvatarCustomizationScreen(),
     ),
     GoRoute(
       path: '/info/:sectionId',
