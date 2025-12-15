@@ -10,7 +10,6 @@ import 'package:mobileapp/shared/widgets/header.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-/// Screen for customizing the user's avatar
 class AvatarCustomizationScreen extends StatefulWidget {
   const AvatarCustomizationScreen({super.key});
 
@@ -163,7 +162,18 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
 
           // Options grid
           Expanded(
-            child: _buildOptionsGrid(),
+            child: AvatarOptionsGrid(
+              selectedCategory: _selectedCategory,
+              currentConfig: _currentConfig,
+              onSkinColorUpdate: _updateSkinColor,
+              onShirtStyleUpdate: _updateShirtStyle,
+              onShirtColorUpdate: _updateShirtColor,
+              onPantsStyleUpdate: _updatePantsStyle,
+              onPantsColorUpdate: _updatePantsColor,
+              onHairStyleUpdate: _updateHairStyle,
+              onHairColorUpdate: _updateHairColor,
+              onAccessoryUpdate: _updateAccessory,
+            ),
           ),
 
           // Save button
@@ -195,77 +205,120 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
       ),
     );
   }
+}
 
-  Widget _buildOptionsGrid() {
-    switch (_selectedCategory) {
-      case 0: // Lichaam (Skin Color)
+class AvatarOptionsGrid extends StatelessWidget {
+  final int selectedCategory;
+  final AvatarConfiguration currentConfig;
+  final Function(Color) onSkinColorUpdate;
+  final Function(int) onShirtStyleUpdate;
+  final Function(Color) onShirtColorUpdate;
+  final Function(int) onPantsStyleUpdate;
+  final Function(Color) onPantsColorUpdate;
+  final Function(int) onHairStyleUpdate;
+  final Function(Color) onHairColorUpdate;
+  final Function(int?) onAccessoryUpdate;
+
+  const AvatarOptionsGrid({
+    super.key,
+    required this.selectedCategory,
+    required this.currentConfig,
+    required this.onSkinColorUpdate,
+    required this.onShirtStyleUpdate,
+    required this.onShirtColorUpdate,
+    required this.onPantsStyleUpdate,
+    required this.onPantsColorUpdate,
+    required this.onHairStyleUpdate,
+    required this.onHairColorUpdate,
+    required this.onAccessoryUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    switch (selectedCategory) {
+      case 0:
         return ColorPickerGrid(
           colors: AvatarCustomizationData.skinColors,
-          currentColor: ColorUtils.hexToColor(_currentConfig.skinColor),
-          onColorSelected: _updateSkinColor,
+          currentColor: ColorUtils.hexToColor(currentConfig.skinColor),
+          onColorSelected: onSkinColorUpdate,
         );
 
-      case 1: // T-shirt
-        return _buildStyleAndColorSection(
+      case 1:
+        return _StyleAndColorSection(
           styleCount: AvatarCustomizationData.shirtStyleCount,
-          currentStyle: _currentConfig.shirtId,
-          onStyleSelected: _updateShirtStyle,
+          currentStyle: currentConfig.shirtId,
+          onStyleSelected: onShirtStyleUpdate,
           labels: AvatarCustomizationData.shirtLabels,
           partType: 'shirt',
           directory: 'shirts',
           colors: AvatarCustomizationData.shirtColors,
-          currentColor: ColorUtils.hexToColor(_currentConfig.shirtColor),
-          onColorSelected: _updateShirtColor,
+          currentColor: ColorUtils.hexToColor(currentConfig.shirtColor),
+          onColorSelected: onShirtColorUpdate,
         );
 
-      case 2: // Broek
-        return _buildStyleAndColorSection(
+      case 2:
+        return _StyleAndColorSection(
           styleCount: AvatarCustomizationData.pantsStyleCount,
-          currentStyle: _currentConfig.pantsId,
-          onStyleSelected: _updatePantsStyle,
+          currentStyle: currentConfig.pantsId,
+          onStyleSelected: onPantsStyleUpdate,
           labels: AvatarCustomizationData.pantsLabels,
           partType: 'pants',
           directory: 'pants',
           colors: AvatarCustomizationData.pantsColors,
-          currentColor: ColorUtils.hexToColor(_currentConfig.pantsColor),
-          onColorSelected: _updatePantsColor,
+          currentColor: ColorUtils.hexToColor(currentConfig.pantsColor),
+          onColorSelected: onPantsColorUpdate,
         );
 
-      case 3: // Haar
-        return _buildStyleAndColorSection(
+      case 3:
+        return _StyleAndColorSection(
           styleCount: AvatarCustomizationData.hairStyleCount,
-          currentStyle: _currentConfig.hairId,
-          onStyleSelected: _updateHairStyle,
+          currentStyle: currentConfig.hairId,
+          onStyleSelected: onHairStyleUpdate,
           labels: AvatarCustomizationData.hairLabels,
           partType: 'hair',
           directory: 'hair',
           colors: AvatarCustomizationData.hairColors,
-          currentColor: ColorUtils.hexToColor(_currentConfig.hairColor),
-          onColorSelected: _updateHairColor,
+          currentColor: ColorUtils.hexToColor(currentConfig.hairColor),
+          onColorSelected: onHairColorUpdate,
         );
 
-      case 4: // Extra (Accessories)
+      case 4:
         return AccessoryPicker(
-          currentAccessoryId: _currentConfig.accessoryId,
-          onAccessorySelected: _updateAccessory,
+          currentAccessoryId: currentConfig.accessoryId,
+          onAccessorySelected: onAccessoryUpdate,
         );
 
       default:
         return Container();
     }
   }
+}
 
-  Widget _buildStyleAndColorSection({
-    required int styleCount,
-    required int currentStyle,
-    required Function(int) onStyleSelected,
-    required List<String> labels,
-    required String partType,
-    required String directory,
-    required List<Color> colors,
-    required Color currentColor,
-    required Function(Color) onColorSelected,
-  }) {
+class _StyleAndColorSection extends StatelessWidget {
+  final int styleCount;
+  final int currentStyle;
+  final Function(int) onStyleSelected;
+  final List<String> labels;
+  final String partType;
+  final String directory;
+  final List<Color> colors;
+  final Color currentColor;
+  final Function(Color) onColorSelected;
+
+  const _StyleAndColorSection({
+    required this.styleCount,
+    required this.currentStyle,
+    required this.onStyleSelected,
+    required this.labels,
+    required this.partType,
+    required this.directory,
+    required this.colors,
+    required this.currentColor,
+    required this.onColorSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Padding(

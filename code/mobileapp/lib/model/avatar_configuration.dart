@@ -1,4 +1,3 @@
-/// Model for storing user's avatar configuration
 class AvatarConfiguration {
   final int bodyType;
   final int shirtId;
@@ -22,7 +21,6 @@ class AvatarConfiguration {
     this.hairColor = '#5D4037', // Default brown hair
   });
 
-  /// Create AvatarConfiguration from JSON
   factory AvatarConfiguration.fromJson(Map<String, dynamic> json) {
     return AvatarConfiguration(
       bodyType: json['bodyType'] ?? 0,
@@ -37,7 +35,6 @@ class AvatarConfiguration {
     );
   }
 
-  /// Convert AvatarConfiguration to JSON
   Map<String, dynamic> toJson() {
     return {
       'bodyType': bodyType,
@@ -52,7 +49,6 @@ class AvatarConfiguration {
     };
   }
 
-  /// Create a copy with modified fields
   AvatarConfiguration copyWith({
     int? bodyType,
     int? shirtId,

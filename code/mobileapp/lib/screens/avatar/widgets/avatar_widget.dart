@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mobileapp/model/avatar_configuration.dart';
 import 'package:mobileapp/screens/avatar/utils/color_utils.dart';
 
-/// Reusable widget to display a customizable avatar
-/// This widget uses a Stack to layer different parts of the avatar
 class AvatarWidget extends StatelessWidget {
   final AvatarConfiguration config;
   final double size;
@@ -93,7 +91,6 @@ class AvatarWidget extends StatelessWidget {
   }
 
   Widget _buildBodyPart(String partType, int partId, Color color) {
-    // Map partType to correct directory
     String directory = partType;
     if (partType == 'body') directory = 'bodies';
     if (partType == 'shirt') directory = 'shirts';
@@ -101,11 +98,9 @@ class AvatarWidget extends StatelessWidget {
     if (partType == 'hair') directory = 'hair';
     if (partType == 'accessory') directory = 'accessories';
 
-    // For body, always use body_0.png
     final actualPartId = partType == 'body' ? 0 : partId;
     final assetPath = 'assets/avatar/$directory/${partType}_$actualPartId.png';
 
-    // Try to load PNG asset, fallback to CustomPaint if not found
     return Image.asset(
       assetPath,
       width: size,
@@ -114,7 +109,6 @@ class AvatarWidget extends StatelessWidget {
       colorBlendMode: partType == 'accessory' ? null : BlendMode.modulate,
       fit: BoxFit.contain,
       errorBuilder: (context, error, stackTrace) {
-        // Fallback to CustomPaint when PNG doesn't exist
         return CustomPaint(
           size: Size(size, size),
           painter: AvatarPartPainter(
@@ -128,9 +122,6 @@ class AvatarWidget extends StatelessWidget {
   }
 }
 
-/// Custom painter for drawing avatar parts
-/// This is a prototype implementation using simple shapes
-/// Replace with actual image assets in production
 class AvatarPartPainter extends CustomPainter {
   final String partType;
   final int partId;

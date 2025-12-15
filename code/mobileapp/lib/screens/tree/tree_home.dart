@@ -72,22 +72,15 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
   Future<void> _initializeData() async {
     futureQuestionAnswerList = fetchQuestionList();
 
-    // Using `await` to wait for the future to complete before accessing its value
     List<dynamic> questionAnswerList = await futureQuestionAnswerList;
 
-    // Now you can access the elements of the list
     questionsList = questionAnswerList[0];
     answersList = questionAnswerList[1];
 
-    // Find the index of the first unanswered question
     int indexOfFirstUnansweredQuestion = questionsList!.indexWhere((question) => answersList!.every((answer) => answer.questionId != question.id));
-
-    //go to the last filled in question because nicer user experience
     if (indexOfFirstUnansweredQuestion > 0) {
       indexOfFirstUnansweredQuestion -= 1;
     }
-
-    // Set all state in one batch to avoid multiple rebuilds
     if (mounted) {
       setState(() {
         currentQuestionIndex = indexOfFirstUnansweredQuestion >= 0 ? indexOfFirstUnansweredQuestion : questionsList!.length - 1;
@@ -166,7 +159,6 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
     });
 
     if (treeStateChanged) {
-      // Load the images asynchronously
       await _loadImages();
 
       if (mounted) {
@@ -176,7 +168,6 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
       }
 
       try {
-        // Dispose old controller before creating new one
         if (_videoPlayerController.value.isInitialized) {
           await _videoPlayerController.pause();
         }
@@ -231,7 +222,6 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
   }
 
   Widget buildChewieWidget() {
-    // Schedule state change after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && treeStateChanged) {
         setState(() {
@@ -262,7 +252,6 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
             ),
           );
         } else {
-          // Loading state, you can return a loading indicator if needed
           return const Center(child: CircularProgressIndicator());
         }
       },
@@ -272,19 +261,15 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
   double _calculateAnswerTopPosition() {
     if (questionsList != null && questionsList!.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        // Get the RenderBox for the speech bubble widget using the GlobalKey
         final RenderBox renderBox = _speechBubbleKey.currentContext!.findRenderObject() as RenderBox;
 
-        // Calculate the top position by adding the height of the speech bubble
         setState(() {
           _answerTopPosition = renderBox.size.height + 120;
         });
       });
-
-      // Return the last calculated top position
       return _answerTopPosition;
     }
-    return 0; // Default top position if questionsList is null or empty
+    return 0;
   }
 
   @override

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/screens/avatar/models/avatar_customization_data.dart';
 
-/// Widget for selecting avatar accessories
 class AccessoryPicker extends StatelessWidget {
   final int? currentAccessoryId;
   final Function(int?) onAccessorySelected;
