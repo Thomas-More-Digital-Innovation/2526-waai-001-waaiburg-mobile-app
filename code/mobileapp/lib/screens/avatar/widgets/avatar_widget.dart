@@ -90,14 +90,16 @@ class AvatarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildBodyPart(String partType, int partId, Color color) {
-    String directory = partType;
-    if (partType == 'body') directory = 'bodies';
-    if (partType == 'shirt') directory = 'shirts';
-    if (partType == 'pants') directory = 'pants';
-    if (partType == 'hair') directory = 'hair';
-    if (partType == 'accessory') directory = 'accessories';
+  static const Map<String, String> _directoryMap = {
+    'body': 'bodies',
+    'shirt': 'shirts',
+    'pants': 'pants',
+    'hair': 'hair',
+    'accessory': 'accessories',
+  };
 
+  Widget _buildBodyPart(String partType, int partId, Color color) {
+    final directory = _directoryMap[partType] ?? partType;
     final actualPartId = partType == 'body' ? 0 : partId;
     final assetPath = 'assets/avatar/$directory/${partType}_$actualPartId.png';
 
@@ -180,30 +182,8 @@ class AvatarPartPainter extends CustomPainter {
     canvas.drawRRect(bodyRect, paint);
 
     // Arms
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-          center.dx - size.width * 0.3,
-          size.height * 0.5,
-          size.width * 0.1,
-          size.height * 0.25,
-        ),
-        const Radius.circular(8),
-      ),
-      paint,
-    );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-          center.dx + size.width * 0.2,
-          size.height * 0.5,
-          size.width * 0.1,
-          size.height * 0.25,
-        ),
-        const Radius.circular(8),
-      ),
-      paint,
-    );
+    _drawArm(canvas, size, center, paint, isLeft: true);
+    _drawArm(canvas, size, center, paint, isLeft: false);
 
     // Eyes
     final eyePaint = Paint()..color = Colors.black;
@@ -262,30 +242,8 @@ class AvatarPartPainter extends CustomPainter {
       canvas.drawRRect(shirtRect, paint);
 
       // Sleeves
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-            center.dx - size.width * 0.32,
-            size.height * 0.5,
-            size.width * 0.12,
-            size.height * 0.28,
-          ),
-          const Radius.circular(8),
-        ),
-        paint,
-      );
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-            center.dx + size.width * 0.2,
-            size.height * 0.5,
-            size.width * 0.12,
-            size.height * 0.28,
-          ),
-          const Radius.circular(8),
-        ),
-        paint,
-      );
+      _drawSleeve(canvas, size, center, paint, isLeft: true);
+      _drawSleeve(canvas, size, center, paint, isLeft: false);
     }
   }
 
@@ -293,58 +251,12 @@ class AvatarPartPainter extends CustomPainter {
       Canvas canvas, Size size, Offset center, Paint paint, int style) {
     if (style == 0) {
       // Long pants
-      // Left leg
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-            center.dx - size.width * 0.15,
-            size.height * 0.72,
-            size.width * 0.12,
-            size.height * 0.25,
-          ),
-          const Radius.circular(8),
-        ),
-        paint,
-      );
-      // Right leg
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-            center.dx + size.width * 0.03,
-            size.height * 0.72,
-            size.width * 0.12,
-            size.height * 0.25,
-          ),
-          const Radius.circular(8),
-        ),
-        paint,
-      );
+      _drawLeg(canvas, size, center, paint, isLeft: true, length: 0.25);
+      _drawLeg(canvas, size, center, paint, isLeft: false, length: 0.25);
     } else if (style == 1) {
       // Shorts
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-            center.dx - size.width * 0.15,
-            size.height * 0.72,
-            size.width * 0.12,
-            size.height * 0.15,
-          ),
-          const Radius.circular(8),
-        ),
-        paint,
-      );
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-            center.dx + size.width * 0.03,
-            size.height * 0.72,
-            size.width * 0.12,
-            size.height * 0.15,
-          ),
-          const Radius.circular(8),
-        ),
-        paint,
-      );
+      _drawLeg(canvas, size, center, paint, isLeft: true, length: 0.15);
+      _drawLeg(canvas, size, center, paint, isLeft: false, length: 0.15);
     }
   }
 
@@ -424,6 +336,54 @@ class AvatarPartPainter extends CustomPainter {
         hatPaint,
       );
     }
+  }
+
+  void _drawArm(Canvas canvas, Size size, Offset center, Paint paint, {required bool isLeft}) {
+    final xOffset = isLeft ? -0.3 : 0.2;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          center.dx + size.width * xOffset,
+          size.height * 0.5,
+          size.width * 0.1,
+          size.height * 0.25,
+        ),
+        const Radius.circular(8),
+      ),
+      paint,
+    );
+  }
+
+  void _drawSleeve(Canvas canvas, Size size, Offset center, Paint paint, {required bool isLeft}) {
+    final xOffset = isLeft ? -0.32 : 0.2;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          center.dx + size.width * xOffset,
+          size.height * 0.5,
+          size.width * 0.12,
+          size.height * 0.28,
+        ),
+        const Radius.circular(8),
+      ),
+      paint,
+    );
+  }
+
+  void _drawLeg(Canvas canvas, Size size, Offset center, Paint paint, {required bool isLeft, required double length}) {
+    final xOffset = isLeft ? -0.15 : 0.03;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          center.dx + size.width * xOffset,
+          size.height * 0.72,
+          size.width * 0.12,
+          size.height * length,
+        ),
+        const Radius.circular(8),
+      ),
+      paint,
+    );
   }
 
   @override
