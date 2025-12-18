@@ -278,6 +278,22 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
     return KeyboardDismissOnTap(
       dismissOnCapturedTaps: true,
       child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          leading: IconButton(
+            icon: Icon(
+              Icons.home_rounded,
+              color: Theme.of(context).colorScheme.secondary,
+              weight: 0.9,
+            ),
+            iconSize: 55,
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          actions: [
+            ProfileButton(),
+          ],
+        ),
         resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
           child: Stack(
@@ -301,24 +317,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                         fit: BoxFit.fill,
                       ),
                     ),
-              Positioned(
-                top: 20,
-                left: 10,
-                child: IconButton(
-                  icon: Icon(
-                    Icons.home_rounded,
-                    color: Theme.of(context).colorScheme.secondary,
-                    weight: 0.9,
-                  ),
-                  iconSize: 55,
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ),
-              Positioned(
-                top: 32,
-                right: 10,
-                child: ProfileButton(),
-              ),
+
               if (allQuestionsFilledIn) const CompletionMessage(),
 
               // Speech Bubble
