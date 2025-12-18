@@ -40,8 +40,8 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
 
   int _state = 0;
 
-  late VideoPlayerController _videoPlayerController;
-  late ChewieController _chewieController;
+  VideoPlayerController? _videoPlayerController;
+  ChewieController? _chewieController;
 
   AvatarConfiguration _avatarConfig = const AvatarConfiguration();
 
@@ -54,8 +54,8 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _videoPlayerController.dispose();
-    _chewieController.dispose();
+    _videoPlayerController?.dispose();
+    _chewieController?.dispose();
     super.dispose();
   }
 
@@ -146,20 +146,38 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
     }
   }
 
+  bool _isVideoLoading = false;
+
   Future<void> _updateTreeState(String direction) async {
-    setState(() {
-      if (direction == "Forward") {
-        if (_state < TreeConstants.maxTreeState) {
-          _state += 1;
-        }
-      } else if (direction == "Backward") {
-        if (_state > TreeConstants.minTreeState) {
-          _state -= 1;
-        }
+    // 1. Calculate new state locally first to avoid premature UI updates if needed,
+    // or just setState if we want the image to update immediately (which seems to be the current logic).
+    int newState = _state;
+    if (direction == "Forward") {
+      if (_state < TreeConstants.maxTreeState) {
+        newState += 1;
       }
+    } else if (direction == "Backward") {
+      if (_state > TreeConstants.minTreeState) {
+        newState -= 1;
+      }
+    }
+
+    // 2. Begin Transition
+    setState(() {
+      _state = newState;
     });
 
     if (treeStateChanged) {
+      // Dispose previous controllers immediately
+      _videoPlayerController?.dispose();
+      _chewieController?.dispose();
+      _videoPlayerController = null;
+      _chewieController = null;
+
+      setState(() {
+        _isVideoLoading = true;
+      });
+
       await _loadImages();
 
       if (mounted) {
@@ -169,44 +187,69 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
       }
 
       try {
-        if (_videoPlayerController.value.isInitialized) {
-          await _videoPlayerController.pause();
-        }
         await _loadVideo();
-        if (mounted) {
+        if (mounted && _videoPlayerController != null) {
           _initializeChewieController();
+
+          // Add listener to hide video when finished
+          _videoPlayerController!.addListener(_checkVideoEndOfStream);
+
+          setState(() {
+            _isVideoLoading = false;
+          });
         }
       } catch (e) {
         debugPrint("Error loading video: $e");
+        if (mounted) {
+          setState(() {
+            _isVideoLoading = false;
+            treeStateChanged = false; // Fallback to image on error
+          });
+        }
+      }
+    }
+  }
+
+  void _checkVideoEndOfStream() {
+    if (_videoPlayerController != null && _videoPlayerController!.value.position == _videoPlayerController!.value.duration) {
+      if (mounted) {
+        setState(() {
+          treeStateChanged = false;
+        });
+        // Cleanup listener to avoid multiple calls
+        _videoPlayerController?.removeListener(_checkVideoEndOfStream);
       }
     }
   }
 
   Future<void> _loadVideo() async {
     try {
-      _videoPlayerController = VideoPlayerController.asset(
+      final controller = VideoPlayerController.asset(
         TreeConstants.getVideoPath(_state),
       );
-
-      await _videoPlayerController.initialize();
+      await controller.initialize();
+      _videoPlayerController = controller;
     } catch (error) {
       debugPrint('Error initializing video player: $error');
+      rethrow;
     }
   }
 
   void _initializeChewieController() {
-    _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-      aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
-      autoInitialize: true,
-      autoPlay: true,
-      looping: false,
-      allowPlaybackSpeedChanging: false,
-      showControlsOnInitialize: false,
-      allowFullScreen: true,
-      showControls: false,
-      showOptions: false,
-    );
+    if (_videoPlayerController != null) {
+      _chewieController = ChewieController(
+        videoPlayerController: _videoPlayerController!,
+        aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
+        autoInitialize: true,
+        autoPlay: true,
+        looping: false, // We handle end of stream manually
+        allowPlaybackSpeedChanging: false,
+        showControlsOnInitialize: false,
+        allowFullScreen: true,
+        showControls: false,
+        showOptions: false,
+      );
+    }
   }
 
   Future<void> _loadImages() async {
@@ -223,39 +266,41 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
   }
 
   Widget buildChewieWidget() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && treeStateChanged) {
-        setState(() {
-          treeStateChanged = false;
-        });
-      }
-    });
-    return FutureBuilder<void>(
-      future: _loadVideo(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return AbsorbPointer(
-            absorbing: true,
-            child: FittedBox(
-              fit: BoxFit.cover,
-              child: Chewie(
-                controller: _chewieController,
-              ),
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (_isVideoLoading) {
+      return SizedBox(
+        width: screenWidth,
+        height: screenHeight,
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_chewieController != null && _videoPlayerController != null) {
+      return SizedBox(
+        width: screenWidth,
+        height: screenHeight,
+        child: FittedBox(
+          fit: BoxFit.cover,
+          child: SizedBox(
+            width: _videoPlayerController!.value.size.width,
+            height: _videoPlayerController!.value.size.height,
+            child: Chewie(
+              controller: _chewieController!,
             ),
-          );
-        } else if (snapshot.hasError) {
-          debugPrint("Error loading video: ${snapshot.error}");
-          return AspectRatio(
-            aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
-            child: Image.asset(
-              TreeConstants.getImagePath(_state),
-              fit: BoxFit.fill,
-            ),
-          );
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
-      },
+          ),
+        ),
+      );
+    }
+
+    // Fallback if not loading but no controller
+    return AspectRatio(
+      aspectRatio: screenWidth / screenHeight,
+      child: Image.asset(
+        TreeConstants.getImagePath(_state),
+        fit: BoxFit.fill,
+      ),
     );
   }
 
