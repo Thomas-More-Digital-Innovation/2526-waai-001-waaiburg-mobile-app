@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/config/routes.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileButton extends StatelessWidget {
   const ProfileButton({super.key});
@@ -7,7 +9,9 @@ class ProfileButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(fixedSize: const Size(50, 50), shape: const CircleBorder(), padding: EdgeInsets.zero),
-      onPressed: () {},
+      onPressed: () {
+        context.push(AppRoutes.avatar);
+      },
       child: ClipOval(
         child: Transform.translate(
           offset: const Offset(0, 20),
