@@ -11,6 +11,7 @@ import 'package:mobileapp/screens/tree/widgets/completion_message.dart';
 import 'package:mobileapp/screens/tree/widgets/input_bubble.dart';
 import 'package:mobileapp/screens/avatar/widgets/avatar_widget.dart';
 import 'package:chewie/chewie.dart';
+import 'package:mobileapp/screens/tree/widgets/profile_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,7 +42,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
 
   late VideoPlayerController _videoPlayerController;
   late ChewieController _chewieController;
-  
+
   AvatarConfiguration _avatarConfig = const AvatarConfiguration();
 
   @override
@@ -125,7 +126,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
     if (questionIndex < 0 || questionIndex >= (questionsList?.length ?? 0)) {
       return null;
     }
-    
+
     final currentQuestionId = questionsList![questionIndex].id;
     try {
       return answersList?.firstWhere(
@@ -313,6 +314,11 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ),
+              Positioned(
+                top: 32,
+                right: 10,
+                child: ProfileButton(),
+              ),
               if (allQuestionsFilledIn) const CompletionMessage(),
 
               // Speech Bubble
@@ -447,7 +453,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                       },
                     ),
                   ),
-              
+
               // Avatar character (het mannetje)
               Positioned(
                 bottom: 120,
