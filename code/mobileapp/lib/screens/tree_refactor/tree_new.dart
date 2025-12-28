@@ -274,11 +274,11 @@ class _TreeNewState extends State<TreeNew> {
                         );
 
                         // Check if this was the last question overall
-                        if (getUnansweredTreePart(treeParts!) == null) {
+                        if (isTreeCompleted(treeParts!)) {
                           setState(() {
                             allQuestionsAnswered = true;
                           });
-                          syncWithApi(); // Sync with API in background
+                          syncWithApi();
                           return;
                         }
 
@@ -286,12 +286,12 @@ class _TreeNewState extends State<TreeNew> {
                         /// a tree state update needs to load & set the video (and uses that video as load time)
                         /// while the normal update updates only after the newest tree part state is loaded
                         if (canGoToNextTreePart) {
-                          setState(() {}); // Update UI before transition
+                          setState(() {});
                           _updateTreeState(_currentState + 1);
-                          syncWithApi(); // Sync with API in background
+                          syncWithApi();
                         } else {
-                          setState(() {}); // Trigger UI update with optimistic data
-                          syncWithApi(); // Sync with API in background
+                          setState(() {});
+                          syncWithApi();
                         }
                       },
                       updateKeyboardVisibility: (bool isVisible) {
