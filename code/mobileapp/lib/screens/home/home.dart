@@ -136,6 +136,13 @@ class _HomeState extends State<Home> {
                           sectionId: 0,
                           route: AppRoutes.userDetails,
                         ),
+                        HomeButton(
+                          name: "test",
+                          icon: FontAwesomeIcons.tree,
+                          iconColor: Theme.of(context).colorScheme.primaryContainer,
+                          sectionId: 0,
+                          route: AppRoutes.treeNew,
+                        ),
                       ],
                     ],
                   ),
