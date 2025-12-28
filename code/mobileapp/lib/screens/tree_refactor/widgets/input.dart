@@ -64,7 +64,9 @@ class _InputWidgetState extends State<InputWidget> {
           answer: newAnswer,
         );
       }
-      // Call reloadData for both create and update paths
+      setState(() {
+        _textController.clear();
+      });
       widget.reloadData(widget.question, newAnswer);
     } catch (e) {
       if (mounted) {

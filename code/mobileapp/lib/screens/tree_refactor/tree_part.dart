@@ -59,3 +59,7 @@ int? getUnansweredTreePart(List<TreePart> treeParts) {
   }
   return null;
 }
+
+bool isTreeCompleted(List<TreePart> treeParts) {
+  return getUnansweredTreePart(treeParts) == null;
+}
