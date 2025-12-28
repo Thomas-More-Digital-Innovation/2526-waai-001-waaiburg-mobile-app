@@ -6,6 +6,7 @@ import 'package:mobileapp/screens/info_segments.dart';
 import 'package:mobileapp/screens/info_contents.dart';
 import 'package:mobileapp/screens/news/news.dart';
 import 'package:mobileapp/screens/tree/tree_home.dart';
+import 'package:mobileapp/screens/tree_refactor/tree_new.dart';
 import 'package:mobileapp/screens/user_details.dart';
 import 'package:mobileapp/screens/avatar/avatar_customization_screen.dart';
 
@@ -15,6 +16,7 @@ abstract class AppRoutes {
   static const String login = '/login';
   static const String news = '/news';
   static const String treeHome = '/tree';
+  static const String treeNew = '/tree_new'; // TODO: remove after refactoring
   static const String userDetails = '/user';
   static const String avatar = '/avatar';
 
@@ -92,6 +94,11 @@ final GoRouter appRouter = GoRouter(
         final title = state.uri.queryParameters['title'];
         return InfoContentSelected(infoId: infoId, title: title);
       },
+    ),
+    GoRoute(
+      // TODO: rename after refactoring
+      path: AppRoutes.treeNew,
+      builder: (context, state) => const TreeNew(),
     ),
   ],
 );

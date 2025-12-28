@@ -1,4 +1,5 @@
 class QuestionList {
+  //? not used
   final int id;
   final String title;
 
@@ -36,6 +37,11 @@ class Question {
       content: json['content'],
     );
   }
+
+  @override
+  String toString() {
+    return 'Question(id: $id, questionListId: $questionListId, treePartId: $treePartId, content: $content)';
+  }
 }
 
 class Answer {
@@ -58,5 +64,10 @@ class Answer {
       questionId: json['question_id'],
       answer: json['answer'],
     );
+  }
+
+  @override
+  String toString() {
+    return 'Answer(id: $id, userId: $userId, questionId: $questionId, answer: $answer)';
   }
 }
