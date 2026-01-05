@@ -55,145 +55,144 @@ class _HomeState extends State<Home> {
     final double logoVerticalOffset = screenHeight * 0.01;
 
     return Scaffold(
-      body: Container(
-        color: Theme.of(context).colorScheme.primary,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: logoVerticalOffset),
-                child: Center(
-                  child: SvgPicture.asset(
-                    'assets/WAAIBURG_DEFINITIEF_vector_RGB_Tekengebied 1-01.svg',
-                    colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),
-                    semanticsLabel: 'Waaiburg Logo',
-                    height: 150,
-                  ),
+        body: Container(
+      color: Theme.of(context).colorScheme.primary,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: logoVerticalOffset),
+              child: Center(
+                child: SvgPicture.asset(
+                  'assets/WAAIBURG_DEFINITIEF_vector_RGB_Tekengebied 1-01.svg',
+                  colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),
+                  semanticsLabel: 'Waaiburg Logo',
+                  height: 150,
                 ),
               ),
-              Expanded(
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 20,
-                    crossAxisSpacing: 18,
-                    childAspectRatio: 1,
-                    padding: const EdgeInsets.all(0),
-                    primary: false,
-                    shrinkWrap: false,
-                    children: [
+            ),
+            Expanded(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 20,
+                  crossAxisSpacing: 18,
+                  childAspectRatio: 1,
+                  padding: const EdgeInsets.all(0),
+                  primary: false,
+                  shrinkWrap: false,
+                  children: [
+                    HomeButton(
+                      name: "JONGEREN",
+                      icon: FontAwesomeIcons.child,
+                      iconColor: Theme.of(context).colorScheme.secondary,
+                      sectionId: 2,
+                      route: "/infosegment",
+                    ),
+                    HomeButton(
+                      name: "VOLWASSENEN",
+                      icon: FontAwesomeIcons.userTie,
+                      iconColor: Theme.of(context).colorScheme.primaryContainer,
+                      sectionId: 1,
+                      route: "/infosegment",
+                    ),
+                    HomeButton(
+                      name: "NIEUWTJES",
+                      icon: FontAwesomeIcons.newspaper,
+                      iconColor: Theme.of(context).colorScheme.primaryContainer,
+                      sectionId: 0,
+                      route: AppRoutes.news,
+                    ),
+                    HomeButton(
+                      name: "WEBSITE",
+                      icon: FontAwesomeIcons.globe,
+                      iconColor: Theme.of(context).colorScheme.secondary,
+                      sectionId: 1,
+                      route: "https://www.dewaaiburg.be/",
+                    ),
+                    if (userLoggedIn) ...[
                       HomeButton(
-                        name: "JONGEREN",
-                        icon: FontAwesomeIcons.child,
+                        name: "LEVENSBOOM",
+                        icon: FontAwesomeIcons.tree,
                         iconColor: Theme.of(context).colorScheme.secondary,
-                        sectionId: 2,
-                        route: "/infosegment",
+                        sectionId: 0,
+                        route: AppRoutes.treeHome,
                       ),
                       HomeButton(
-                        name: "VOLWASSENEN",
-                        icon: FontAwesomeIcons.userTie,
-                        iconColor: Theme.of(context).colorScheme.primaryContainer,
-                        sectionId: 1,
-                        route: "/infosegment",
+                        name: "MIJN AVATAR",
+                        icon: FontAwesomeIcons.faceSmile,
+                        iconColor: Theme.of(context).colorScheme.secondary,
+                        sectionId: 0,
+                        route: AppRoutes.avatar,
                       ),
                       HomeButton(
-                        name: "NIEUWTJES",
-                        icon: FontAwesomeIcons.newspaper,
+                        name: "GEGEVENS",
+                        icon: FontAwesomeIcons.user,
                         iconColor: Theme.of(context).colorScheme.primaryContainer,
                         sectionId: 0,
-                        route: AppRoutes.news,
+                        route: AppRoutes.userDetails,
                       ),
                       HomeButton(
-                        name: "WEBSITE",
-                        icon: FontAwesomeIcons.globe,
-                        iconColor: Theme.of(context).colorScheme.secondary,
-                        sectionId: 1,
-                        route: "https://www.dewaaiburg.be/",
+                        name: "test",
+                        icon: FontAwesomeIcons.tree,
+                        iconColor: Theme.of(context).colorScheme.primaryContainer,
+                        sectionId: 0,
+                        route: AppRoutes.treeNew,
                       ),
-                      if (userLoggedIn) ...[
-                        HomeButton(
-                          name: "LEVENSBOOM",
-                          icon: FontAwesomeIcons.tree,
-                          iconColor: Theme.of(context).colorScheme.secondary,
-                          sectionId: 0,
-                          route: AppRoutes.treeHome,
-                        ),
-                        HomeButton(
-                          name: "MIJN AVATAR",
-                          icon: FontAwesomeIcons.faceSmile,
-                          iconColor: Theme.of(context).colorScheme.secondary,
-                          sectionId: 0,
-                          route: AppRoutes.avatar,
-                        ),
-                        HomeButton(
-                          name: "GEGEVENS",
-                          icon: FontAwesomeIcons.user,
-                          iconColor: Theme.of(context).colorScheme.primaryContainer,
-                          sectionId: 0,
-                          route: AppRoutes.userDetails,
-                        ),
-                        HomeButton(
-                          name: "test",
-                          icon: FontAwesomeIcons.tree,
-                          iconColor: Theme.of(context).colorScheme.primaryContainer,
-                          sectionId: 0,
-                          route: AppRoutes.treeNew,
-                        ),
-                      ],
                     ],
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsetsGeometry.only(top: 12),
+              child: SizedBox(
+                width: screenHeight,
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.all(12.0),
+                    backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(30)),
+                    ),
+                  ),
+                  onPressed: () async {
+                    if (userLoggedIn) {
+                      logOut();
+                    } else {
+                      // Push the login page and wait for a result; if true is returned, reload login state
+                      final result = await context.push(AppRoutes.login);
+                      if (result == true) {
+                        await loadLoggedInState();
+                      }
+                    }
+                  },
+                  child: Text(
+                    userLoggedIn ? 'Uitloggen' : 'Inloggen',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 5,
+                          color: Colors.black45,
+                          offset: Offset(0, 2),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsetsGeometry.only(top: 12),
-        child: SizedBox(
-          width: screenHeight,
-          child: TextButton(
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.all(12.0),
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
-              ),
-            ),
-            onPressed: () async {
-              if (userLoggedIn) {
-                logOut();
-              } else {
-                // Push the login page and wait for a result; if true is returned, reload login state
-                final result = await context.push(AppRoutes.login);
-                if (result == true) {
-                  await loadLoggedInState();
-                }
-              }
-            },
-            child: Text(
-              userLoggedIn ? 'Uitloggen' : 'Inloggen',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-                shadows: [
-                  Shadow(
-                    blurRadius: 5,
-                    color: Colors.black45,
-                    offset: Offset(0, 2),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+    ));
   }
 }
