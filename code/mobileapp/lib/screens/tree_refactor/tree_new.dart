@@ -268,10 +268,10 @@ class _TreeNewState extends State<TreeNew> {
               // TODO: debug
               if (!_showAvatarTooltip)
                 Positioned(
-                  right: 100,
-                  top: 32,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
+                  right: 0,
+                  top: 100,
+                  child: IconButton(
+                    style: IconButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(80),
                       foregroundColor: Theme.of(context).colorScheme.surface.withAlpha(140),
                     ),
@@ -283,7 +283,7 @@ class _TreeNewState extends State<TreeNew> {
                         });
                       }
                     },
-                    child: const Text('Reset tooltip'),
+                    icon: const Icon(Icons.restore),
                   ),
                 ),
             ],
