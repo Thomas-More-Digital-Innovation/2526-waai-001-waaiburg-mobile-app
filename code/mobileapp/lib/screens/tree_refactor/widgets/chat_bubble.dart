@@ -1,25 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/bubble_clipper.dart';
 
+enum ChatOrigin {
+  left,
+  right,
+}
+
 class ChatBubble extends StatelessWidget {
   final String text;
   final bool isUser;
-  const ChatBubble({super.key, required this.text, required this.isUser});
+  final bool flipChatOrigin;
+  final double maxWidth;
+  const ChatBubble({super.key, required this.text, required this.isUser, this.flipChatOrigin = false, this.maxWidth = 280});
 
   @override
   Widget build(BuildContext context) {
+    ChatOrigin chatOrigin = flipChatOrigin ? (isUser ? ChatOrigin.left : ChatOrigin.right) : (isUser ? ChatOrigin.right : ChatOrigin.left);
     return Align(
-      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: chatOrigin == ChatOrigin.right ? Alignment.centerRight : Alignment.centerLeft,
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: ClipPath(
-          clipper: ChatBubbleClipper(isUser: isUser),
+          clipper: ChatBubbleClipper(chatOrigin: chatOrigin),
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 280),
+            constraints: BoxConstraints(maxWidth: maxWidth),
             padding: EdgeInsets.fromLTRB(
-              isUser ? 10 : 20,
+              chatOrigin == ChatOrigin.right ? 10 : 20,
               10,
-              isUser ? 20 : 10,
+              chatOrigin == ChatOrigin.right ? 20 : 10,
               10,
             ),
             color: isUser ? const Color(0xFFE7FFDB) : Colors.white, // WhatsApp-like colors

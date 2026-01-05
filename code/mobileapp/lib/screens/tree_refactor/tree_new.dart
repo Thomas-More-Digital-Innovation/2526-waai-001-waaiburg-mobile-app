@@ -1,16 +1,22 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:mobileapp/api/question_list.dart';
+import 'package:mobileapp/model/avatar_configuration.dart';
 import 'package:mobileapp/model/qna.dart';
 import 'package:mobileapp/model/tree_part.dart';
+import 'package:mobileapp/screens/avatar/widgets/avatar_widget.dart';
 import 'package:mobileapp/screens/tree_refactor/tree_part.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/chat_bubble_constructor.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/completion_card.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/input.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/background.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/profile_button.dart';
+import 'package:mobileapp/screens/tree_refactor/widgets/avatar.dart';
 import 'package:mobileapp/screens/tree/tree_constants.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/tree_loading.dart';
+import 'package:mobileapp/screens/tree_refactor/widgets/avatar_tooltip.dart';
+import 'package:mobileapp/screens/tree_refactor/logic/avatar_tooltip_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
 class TreeNew extends StatefulWidget {
@@ -28,23 +34,59 @@ class _TreeNewState extends State<TreeNew> {
   int _currentState = 0;
   int? _targetState;
   bool _isPlayingTransition = false;
-  bool _isWaitingForNextQuestionInTreePart = false;
   bool _initialImageLoaded = false;
   VideoPlayerController? _activeTransitionController;
   bool allQuestionsAnswered = false;
+  AvatarConfiguration _avatarConfig = const AvatarConfiguration();
+  bool _showAvatarTooltip = false;
+  final AvatarTooltipController _avatarController = AvatarTooltipController();
 
   final Map<int, VideoPlayerController> _videoControllers = {};
+
+  final ScrollController _chatScrollController = ScrollController();
+
+  void _scrollToBottom() {
+    if (_chatScrollController.hasClients) {
+      _chatScrollController.animateTo(
+        _chatScrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     loadTreeParts().then((_) => initTree());
+    loadAvatarConfig();
+    _checkAvatarTooltip();
+  }
+
+  Future<void> _checkAvatarTooltip() async {
+    final shouldShow = await _avatarController.shouldShowTooltip();
+    if (mounted) {
+      setState(() {
+        _showAvatarTooltip = shouldShow;
+      });
+    }
   }
 
   Future<void> loadTreeParts() async {
     List<dynamic> futureQuestionAnswerList = await fetchQuestionList();
 
     treeParts = generateTreeParts(futureQuestionAnswerList[0], futureQuestionAnswerList[1]);
+  }
+
+  Future<void> loadAvatarConfig() async {
+    final prefs = await SharedPreferences.getInstance();
+    final configJson = prefs.getString('avatar_config');
+
+    if (mounted && configJson != null) {
+      setState(() {
+        _avatarConfig = AvatarConfiguration.fromJson(jsonDecode(configJson));
+      });
+    }
   }
 
   /// Background sync that preserves optimistic updates
@@ -170,8 +212,11 @@ class _TreeNewState extends State<TreeNew> {
     int? unansweredTreePartIndex = getUnansweredTreePart(treeParts!);
     bool isUnansweredTreePart = (!allQuestionsAnswered && unansweredTreePartIndex != null && unansweredTreePartIndex <= _currentState);
 
-    return KeyboardDismissOnTap(
-      dismissOnCapturedTaps: true,
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      behavior: HitTestBehavior.translucent,
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
@@ -193,7 +238,14 @@ class _TreeNewState extends State<TreeNew> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           actions: [
-            ProfileButton(),
+            Avatar(
+              callback: () {
+                setState(() {
+                  _checkAvatarTooltip();
+                  loadAvatarConfig();
+                });
+              },
+            ),
           ],
         ),
         body: Stack(
@@ -231,12 +283,14 @@ class _TreeNewState extends State<TreeNew> {
                   ),
                 ),
               SafeArea(
-                child: ChatBubbleConstructor(
-                  questionAnswerMap: treeParts![_currentState].questionAnswerMap,
-                  loadingNextQuestion: _isWaitingForNextQuestionInTreePart,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 48),
+                  child: ChatBubbleConstructor(
+                    questionAnswerMap: treeParts![_currentState].questionAnswerMap,
+                    scrollController: _chatScrollController,
+                  ),
                 ),
               ),
-
               Positioned(
                 left: 0,
                 right: 0,
@@ -258,9 +312,7 @@ class _TreeNewState extends State<TreeNew> {
                   } else {
                     return InputWidget(
                       question: nextQuestion,
-                      reloadData: (Question answeredQuestion, String answerText) {
-                        bool canGoToNextTreePart = treeParts![_currentState].unasweredQuestions == 1;
-
+                      reloadData: (Question answeredQuestion, String answerText) async {
                         // Optimistically update local state immediately
                         final optimisticAnswer = Answer(
                           id: -1, // Temporary ID, will be replaced on API sync
@@ -273,6 +325,8 @@ class _TreeNewState extends State<TreeNew> {
                           optimisticAnswer,
                         );
 
+                        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+
                         // Check if this was the last question overall
                         if (isTreeCompleted(treeParts!)) {
                           setState(() {
@@ -282,17 +336,8 @@ class _TreeNewState extends State<TreeNew> {
                           return;
                         }
 
-                        /// We differentiate a next tree part update & a normal update because
-                        /// a tree state update needs to load & set the video (and uses that video as load time)
-                        /// while the normal update updates only after the newest tree part state is loaded
-                        if (canGoToNextTreePart) {
-                          setState(() {});
-                          _updateTreeState(_currentState + 1);
-                          syncWithApi();
-                        } else {
-                          setState(() {});
-                          syncWithApi();
-                        }
+                        // Show typing indicator before revealing next question
+                        syncWithApi(); // Sync in background
                       },
                       updateKeyboardVisibility: (bool isVisible) {
                         setState(() {});
@@ -300,8 +345,34 @@ class _TreeNewState extends State<TreeNew> {
                     );
                   }
                 }(),
-              )
-            ]
+              ),
+              Positioned(
+                right: -50,
+                bottom: 90,
+                child: AvatarWidget(
+                  config: _avatarConfig,
+                  size: 250,
+                ),
+              ),
+              if (_showAvatarTooltip) const AvatarTooltip(),
+              // TODO: debug
+              if (!_showAvatarTooltip)
+                Positioned(
+                  right: 20,
+                  bottom: 20,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await _avatarController.debugResetTooltip();
+                      if (context.mounted) {
+                        setState(() {
+                          _showAvatarTooltip = true;
+                        });
+                      }
+                    },
+                    child: const Text('Reset tooltip'),
+                  ),
+                ),
+            ],
           ],
         ),
       ),
