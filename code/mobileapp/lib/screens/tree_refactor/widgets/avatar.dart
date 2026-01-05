@@ -1,32 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/config/routes.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mobileapp/screens/tree_refactor/logic/avatar_tooltip_controller.dart';
 
-class ProfileButton extends StatefulWidget {
-  const ProfileButton({super.key});
+class Avatar extends StatefulWidget {
+  final Function() callback;
+  const Avatar({super.key, required this.callback});
 
   @override
-  State<ProfileButton> createState() => _ProfileButtonState();
+  State<Avatar> createState() => _AvatarState();
 }
 
-class _ProfileButtonState extends State<ProfileButton> {
+class _AvatarState extends State<Avatar> {
   bool hasSeenAvatarScreen = false;
+  final AvatarTooltipController _controller = AvatarTooltipController();
 
-  Future<bool> getHasSeenAvatarScreen() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool("hasSeenAvatarScreen") ?? false;
-  }
-
-  void setHasSeenAvatarScreen() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool("hasSeenAvatarScreen", true);
+  Future<void> _checkHasSeen() async {
+    final shouldShow = await _controller.shouldShowTooltip();
+    if (mounted) {
+      setState(() {
+        // if tooltip IS showing (shouldShow=true), then we haven't seen it (hasSeen=false)
+        hasSeenAvatarScreen = !shouldShow;
+      });
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    getHasSeenAvatarScreen().then((value) => setState(() => hasSeenAvatarScreen = value));
+    _checkHasSeen();
   }
 
   @override
@@ -35,10 +37,10 @@ class _ProfileButtonState extends State<ProfileButton> {
       style: ElevatedButton.styleFrom(fixedSize: const Size(56, 56), shape: const CircleBorder(), padding: EdgeInsets.zero),
       onPressed: () {
         if (!hasSeenAvatarScreen) {
-          setHasSeenAvatarScreen();
+          _controller.markTooltipAsSeen();
         }
 
-        context.push(AppRoutes.avatar);
+        context.push(AppRoutes.avatar).then((value) => widget.callback());
       },
       child: ClipOval(
         child: Transform.translate(

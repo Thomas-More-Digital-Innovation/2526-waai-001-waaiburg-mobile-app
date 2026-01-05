@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/screens/tree_refactor/widgets/chat_bubble.dart';
 
 class ChatBubbleClipper extends CustomClipper<Path> {
-  final bool isUser;
+  final ChatOrigin chatOrigin;
 
-  ChatBubbleClipper({required this.isUser});
+  ChatBubbleClipper({required this.chatOrigin});
 
   @override
   Path getClip(Size size) {
     final path = Path();
-    if (isUser) {
+    if (chatOrigin == ChatOrigin.right) {
       path.moveTo(size.width - 22, size.height);
       path.lineTo(17, size.height);
       path.cubicTo(7.6, size.height, 0, size.height - 7.6, 0, size.height - 17);
@@ -35,5 +36,5 @@ class ChatBubbleClipper extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(ChatBubbleClipper oldClipper) => oldClipper.isUser != isUser;
+  bool shouldReclip(ChatBubbleClipper oldClipper) => oldClipper.chatOrigin != chatOrigin;
 }
