@@ -354,7 +354,15 @@ class _TreeNewState extends State<TreeNew> {
                   size: 250,
                 ),
               ),
-              if (_showAvatarTooltip) const AvatarTooltip(),
+              if (_showAvatarTooltip)
+                AvatarTooltip(
+                  onDismissTooltip: () async {
+                    await _avatarController.markTooltipAsSeen();
+                    setState(() {
+                      _showAvatarTooltip = false;
+                    });
+                  },
+                ),
               // TODO: debug
               if (!_showAvatarTooltip)
                 Positioned(

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/chat_bubble.dart';
 
 class AvatarTooltip extends StatelessWidget {
-  const AvatarTooltip({super.key});
+  final Function() onDismissTooltip;
+  const AvatarTooltip({super.key, required this.onDismissTooltip});
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +12,7 @@ class AvatarTooltip extends StatelessWidget {
       bottom: 240,
       right: 120,
       child: GestureDetector(
-        onTap: () {},
+        onTap: onDismissTooltip,
         child: ChatBubble(
           flipChatOrigin: true,
           maxWidth: maxWidth,
