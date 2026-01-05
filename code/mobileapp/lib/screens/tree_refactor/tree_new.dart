@@ -258,30 +258,15 @@ class _TreeNewState extends State<TreeNew> {
               isPlayingTransition: _isPlayingTransition,
             ),
             if (!_isPlayingTransition) ...[
-              // next button
-              if (!isUnansweredTreePart && _currentState != maxTreeState)
-                Positioned(
-                  bottom: 100,
-                  right: 20,
-                  child: FloatingActionButton(
-                    onPressed: () => _updateTreeState(_currentState + 1),
-                    backgroundColor: Theme.of(context).colorScheme.secondary,
-                    foregroundColor: Theme.of(context).colorScheme.onSecondary,
-                    child: const Icon(Icons.arrow_forward),
-                  ),
+              Positioned(
+                right: -50,
+                bottom: 90,
+                child: AvatarWidget(
+                  config: _avatarConfig,
+                  size: 250,
                 ),
-              // previous button
-              if (_currentState != 0)
-                Positioned(
-                  bottom: 100,
-                  left: 20,
-                  child: FloatingActionButton(
-                    onPressed: () => _updateTreeState(_currentState - 1),
-                    backgroundColor: Theme.of(context).colorScheme.secondary,
-                    foregroundColor: Theme.of(context).colorScheme.onSecondary,
-                    child: const Icon(Icons.arrow_back),
-                  ),
-                ),
+              ),
+
               SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 48),
@@ -346,14 +331,30 @@ class _TreeNewState extends State<TreeNew> {
                   }
                 }(),
               ),
-              Positioned(
-                right: -50,
-                bottom: 90,
-                child: AvatarWidget(
-                  config: _avatarConfig,
-                  size: 250,
+              // next button
+              if (!isUnansweredTreePart && _currentState != maxTreeState)
+                Positioned(
+                  bottom: 100,
+                  right: 20,
+                  child: FloatingActionButton(
+                    onPressed: () => _updateTreeState(_currentState + 1),
+                    backgroundColor: Theme.of(context).colorScheme.secondary,
+                    foregroundColor: Theme.of(context).colorScheme.onSecondary,
+                    child: const Icon(Icons.arrow_forward),
+                  ),
                 ),
-              ),
+              // previous button
+              if (_currentState != 0)
+                Positioned(
+                  bottom: 100,
+                  left: 20,
+                  child: FloatingActionButton(
+                    onPressed: () => _updateTreeState(_currentState - 1),
+                    backgroundColor: Theme.of(context).colorScheme.secondary,
+                    foregroundColor: Theme.of(context).colorScheme.onSecondary,
+                    child: const Icon(Icons.arrow_back),
+                  ),
+                ),
               if (_showAvatarTooltip)
                 AvatarTooltip(
                   onDismissTooltip: () async {
