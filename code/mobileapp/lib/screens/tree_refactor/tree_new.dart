@@ -268,9 +268,13 @@ class _TreeNewState extends State<TreeNew> {
               // TODO: debug
               if (!_showAvatarTooltip)
                 Positioned(
-                  right: 20,
-                  bottom: 20,
+                  right: 100,
+                  top: 32,
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(80),
+                      foregroundColor: Theme.of(context).colorScheme.surface.withAlpha(140),
+                    ),
                     onPressed: () async {
                       await _avatarController.debugResetTooltip();
                       if (context.mounted) {
