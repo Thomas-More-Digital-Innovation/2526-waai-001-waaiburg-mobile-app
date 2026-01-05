@@ -123,6 +123,13 @@ class _HomeState extends State<Home> {
                           route: AppRoutes.treeHome,
                         ),
                         HomeButton(
+                          name: "MIJN AVATAR",
+                          icon: FontAwesomeIcons.faceSmile,
+                          iconColor: Theme.of(context).colorScheme.secondary,
+                          sectionId: 0,
+                          route: AppRoutes.avatar,
+                        ),
+                        HomeButton(
                           name: "GEGEVENS",
                           icon: FontAwesomeIcons.user,
                           iconColor: Theme.of(context).colorScheme.primaryContainer,

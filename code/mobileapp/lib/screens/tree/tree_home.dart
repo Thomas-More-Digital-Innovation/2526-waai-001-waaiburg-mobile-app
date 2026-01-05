@@ -2,14 +2,18 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:mobileapp/config/env.dart';
 import 'package:mobileapp/api/question_list.dart';
 import 'package:mobileapp/model/qna.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+import 'package:mobileapp/model/avatar_configuration.dart';
+import 'package:mobileapp/screens/tree/tree_constants.dart';
+import 'package:mobileapp/screens/tree/widgets/chat_bubble.dart';
+import 'package:mobileapp/screens/tree/widgets/completion_message.dart';
+import 'package:mobileapp/screens/tree/widgets/input_bubble.dart';
+import 'package:mobileapp/screens/avatar/widgets/avatar_widget.dart';
 import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TreeHome extends StatefulWidget {
   const TreeHome({super.key});
@@ -37,11 +41,14 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
 
   late VideoPlayerController _videoPlayerController;
   late ChewieController _chewieController;
+  
+  AvatarConfiguration _avatarConfig = const AvatarConfiguration();
 
   @override
   void initState() {
     super.initState();
     _initializeData();
+    _loadAvatarConfig();
   }
 
   @override
@@ -51,39 +58,37 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  Future<void> _loadAvatarConfig() async {
+    final prefs = await SharedPreferences.getInstance();
+    final configJson = prefs.getString('avatar_config');
+
+    if (mounted && configJson != null) {
+      setState(() {
+        _avatarConfig = AvatarConfiguration.fromJson(jsonDecode(configJson));
+      });
+    }
+  }
+
   Future<void> _initializeData() async {
     futureQuestionAnswerList = fetchQuestionList();
 
-    // Using `await` to wait for the future to complete before accessing its value
     List<dynamic> questionAnswerList = await futureQuestionAnswerList;
 
-    // Now you can access the elements of the list
     questionsList = questionAnswerList[0];
     answersList = questionAnswerList[1];
 
-    // Find the index of the first unanswered question
     int indexOfFirstUnansweredQuestion = questionsList!.indexWhere((question) => answersList!.every((answer) => answer.questionId != question.id));
-
-    //go to the last filled in question because nicer user experience
     if (indexOfFirstUnansweredQuestion > 0) {
       indexOfFirstUnansweredQuestion -= 1;
     }
-
-    // Set currentQuestionIndex to the found index, or 0 if no unanswered questions are found
-    setState(() {
-      currentQuestionIndex = indexOfFirstUnansweredQuestion >= 0 ? indexOfFirstUnansweredQuestion : questionsList!.length - 1;
-    });
-
-    // set the current tree part index to the found index, or 0 if no unanswered questions are found
-    setState(() {
-      currentTreePartIndex = questionsList![currentQuestionIndex].treePartId;
-    });
-    // set the current index to the current tree part index - 1 because the tree part index starts at 1
-    setState(() {
-      _state = currentTreePartIndex - 1;
-    });
-    // set the answer to the answer of the current question
-    setState((() => answer = _getAnswerValue(currentQuestionIndex)));
+    if (mounted) {
+      setState(() {
+        currentQuestionIndex = indexOfFirstUnansweredQuestion >= 0 ? indexOfFirstUnansweredQuestion : questionsList!.length - 1;
+        currentTreePartIndex = questionsList![currentQuestionIndex].treePartId;
+        _state = currentTreePartIndex - 1;
+        answer = _getAnswerValue(currentQuestionIndex);
+      });
+    }
   }
 
   void _goToPreviousQuestion() {
@@ -117,79 +122,74 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
   }
 
   Answer? _getAnswerValue(int questionIndex) {
-    if (questionIndex >= 0 && questionIndex < questionsList!.length) {
-      final currentQuestionId = questionsList![currentQuestionIndex].id;
-
-      try {
-        final answer = answersList!.firstWhere(
-          (answer) => answer.questionId == currentQuestionId,
-        );
-
-        return answer;
-      } catch (e) {
-        return null;
-      }
+    if (questionIndex < 0 || questionIndex >= (questionsList?.length ?? 0)) {
+      return null;
     }
-    return null;
+    
+    final currentQuestionId = questionsList![questionIndex].id;
+    try {
+      return answersList?.firstWhere(
+        (answer) => answer.questionId == currentQuestionId,
+      );
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<void> reloadAllData() async {
     await _initializeData();
-    isInputVisible = false;
+    if (mounted) {
+      setState(() {
+        isInputVisible = false;
+      });
+    }
   }
 
-  final treeStates = const {0: 'begin', 1: 'zaadje', 2: 'stam', 3: 'takken', 4: 'bladeren', 5: 'appels', 6: 'vogels', 7: 'last'};
-
-  void _updateTreeState(String direction) async {
-    final Completer<void> completer = Completer<void>();
-
+  Future<void> _updateTreeState(String direction) async {
     setState(() {
       if (direction == "Forward") {
-        if (_state < 6) {
+        if (_state < TreeConstants.maxTreeState) {
           _state += 1;
-          // Reset the controller to the beginning after the state update.
         }
       } else if (direction == "Backward") {
-        if (_state > 0) {
+        if (_state > TreeConstants.minTreeState) {
           _state -= 1;
-          // Reset the controller to the beginning after the state update.
         }
       }
     });
 
     if (treeStateChanged) {
-      // Load the images asynchronously
-      await _loadImages().then((_) {
-        completer.complete();
-      });
+      await _loadImages();
 
-      // Wait until the images are fully loaded before updating the video controller
-      await completer.future;
-
-      // Update the current tree part index
-      setState(() {
-        currentTreePartIndex = questionsList![currentQuestionIndex].treePartId;
-      });
+      if (mounted) {
+        setState(() {
+          currentTreePartIndex = questionsList![currentQuestionIndex].treePartId;
+        });
+      }
 
       try {
+        if (_videoPlayerController.value.isInitialized) {
+          await _videoPlayerController.pause();
+        }
         await _loadVideo();
+        if (mounted) {
+          _initializeChewieController();
+        }
       } catch (e) {
-        print("Error loading video: $e");
+        debugPrint("Error loading video: $e");
       }
-      _initializeChewieController();
     }
   }
 
   Future<void> _loadVideo() async {
     try {
       _videoPlayerController = VideoPlayerController.asset(
-        'assets/tree_of_life/${treeStates[_state]}.mp4',
+        TreeConstants.getVideoPath(_state),
       );
 
       await _videoPlayerController.initialize();
     } catch (error) {
-      print('Error initializing video player: $error');
-      // Handle the error as needed
+      debugPrint('Error initializing video player: $error');
     }
   }
 
@@ -210,10 +210,10 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
 
   Future<void> _loadImages() async {
     final precacheTasks = <Future>[];
-    for (var i = 1; i <= 6; i++) {
+    for (var i = 1; i <= TreeConstants.maxTreeState; i++) {
       precacheTasks.add(
         precacheImage(
-          AssetImage('assets/tree_of_life/${treeStates[i]}.png'),
+          AssetImage(TreeConstants.getImagePath(i)),
           context,
         ),
       );
@@ -222,8 +222,12 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
   }
 
   Widget buildChewieWidget() {
-    setState(() {
-      treeStateChanged = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && treeStateChanged) {
+        setState(() {
+          treeStateChanged = false;
+        });
+      }
     });
     return FutureBuilder<void>(
       future: _loadVideo(),
@@ -239,16 +243,15 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
             ),
           );
         } else if (snapshot.hasError) {
-          print("Error loading video: ${snapshot.error}");
+          debugPrint("Error loading video: ${snapshot.error}");
           return AspectRatio(
             aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
             child: Image.asset(
-              'assets/tree_of_life/${treeStates[_state]}.png',
+              TreeConstants.getImagePath(_state),
               fit: BoxFit.fill,
             ),
           );
         } else {
-          // Loading state, you can return a loading indicator if needed
           return const Center(child: CircularProgressIndicator());
         }
       },
@@ -258,19 +261,15 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
   double _calculateAnswerTopPosition() {
     if (questionsList != null && questionsList!.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        // Get the RenderBox for the speech bubble widget using the GlobalKey
         final RenderBox renderBox = _speechBubbleKey.currentContext!.findRenderObject() as RenderBox;
 
-        // Calculate the top position by adding the height of the speech bubble
         setState(() {
           _answerTopPosition = renderBox.size.height + 120;
         });
       });
-
-      // Return the last calculated top position
       return _answerTopPosition;
     }
-    return 0; // Default top position if questionsList is null or empty
+    return 0;
   }
 
   @override
@@ -286,7 +285,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
               AspectRatio(
                 aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
                 child: Image.asset(
-                  'assets/tree_of_life/${_state > 0 ? treeStates[_state - 1] : treeStates[_state]}.png',
+                  TreeConstants.getImagePath(_state > 0 ? _state - 1 : _state),
                   fit: BoxFit.fill,
                 ),
               ),
@@ -297,7 +296,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                   : AspectRatio(
                       aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
                       child: Image.asset(
-                        'assets/tree_of_life/${treeStates[_state]}.png',
+                        TreeConstants.getImagePath(_state),
                         fit: BoxFit.fill,
                       ),
                     ),
@@ -314,55 +313,7 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ),
-              if (allQuestionsFilledIn)
-                Column(
-                  children: [
-                    const SizedBox(height: 85),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(140), // Set your desired background color and opacity
-                        borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
-                      ),
-                      padding: const EdgeInsets.all(16.0), // Adjust the padding as needed
-                      margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                "Proficiat!",
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.secondary, // Adjust text color as needed
-                                ),
-                              ),
-                              const SizedBox(height: 7),
-                              Text(
-                                "Je hebt alle vragen ingevuld,\nje boom is nu volgroeid.",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Theme.of(context).colorScheme.secondary, // Adjust text color as needed
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 4),
-                              const Text(
-                                "Scroll gerust terug om te kijken wat je \n antwoorden waren tijdens de groei van je boom",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black, // Adjust text color as needed
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              if (allQuestionsFilledIn) const CompletionMessage(),
 
               // Speech Bubble
               if (!allQuestionsFilledIn)
@@ -455,13 +406,9 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                       backgroundColor: Theme.of(context).colorScheme.secondary,
                     ),
                     onPressed: () {
-                      if (questionsList!.isNotEmpty) {
+                      if (questionsList?.isNotEmpty ?? false) {
                         setState(() {
-                          if (!isInputVisible) {
-                            isInputVisible = true;
-                          } else {
-                            isInputVisible = false;
-                          }
+                          isInputVisible = !isInputVisible;
                         });
                       }
                     },
@@ -500,229 +447,31 @@ class _TreeHomeState extends State<TreeHome> with TickerProviderStateMixin {
                       },
                     ),
                   ),
+              
+              // Avatar character (het mannetje)
+              Positioned(
+                bottom: 120,
+                right: -30,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/avatar').then((_) {
+                      // Reload avatar config when returning from customization
+                      _loadAvatarConfig();
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    child: AvatarWidget(
+                      config: _avatarConfig,
+                      size: 250,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
-  }
-}
-
-// ... (rest of the code remains unchanged)
-
-class ChatBubble extends StatelessWidget {
-  final String message;
-  final double horizontalPadding;
-  final double verticalPadding;
-  final Color backgroundColor;
-  final Color textColor;
-  final double maxWidth;
-
-  const ChatBubble({
-    super.key,
-    required this.message,
-    this.horizontalPadding = 16.0,
-    this.verticalPadding = 8.0,
-    this.backgroundColor = Colors.blue,
-    this.textColor = Colors.white,
-    this.maxWidth = 200.0,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipPath(
-      clipper: BubbleClipper(),
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: horizontalPadding,
-          vertical: verticalPadding,
-        ),
-        decoration: BoxDecoration(
-          color: backgroundColor,
-        ),
-        child: Container(
-          constraints: BoxConstraints(maxWidth: maxWidth),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              message,
-              style: TextStyle(color: textColor),
-              textAlign: TextAlign.justify,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class InputBubble extends StatefulWidget {
-  late Answer? answer;
-  final int questionId;
-  final Function reloadData;
-  final Function(bool) updateKeyboardVisibility;
-
-  InputBubble({
-    super.key,
-    this.answer,
-    required this.questionId,
-    required this.reloadData,
-    required this.updateKeyboardVisibility,
-  });
-
-  @override
-  _InputBubbleState createState() => _InputBubbleState();
-}
-
-class _InputBubbleState extends State<InputBubble> {
-  final TextEditingController _textController = TextEditingController();
-  late final FocusNode _focusNode = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-    _focusNode.addListener(_onFocusChange);
-    if (widget.answer != null) {
-      _textController.text = widget.answer!.answer;
-    }
-  }
-
-  @override
-  void dispose() {
-    _focusNode.removeListener(_onFocusChange);
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  void _onFocusChange() {
-    widget.updateKeyboardVisibility(_focusNode.hasFocus);
-  }
-
-  Future<void> _sendAnswer(String newAnswer) async {
-    String apiEndpoint = '$apiUrl/answer'; // API URL
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.get('userToken');
-    final userId = prefs.get('userId');
-
-    if (widget.answer != null) {
-      widget.answer!.answer = newAnswer;
-      try {
-        final response = await http.put(
-          Uri.parse("$apiEndpoint/${widget.answer!.id}"),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-          body: jsonEncode({
-            'user_id': userId,
-            'question_id': widget.answer!.questionId,
-            'answer': widget.answer!.answer,
-          }),
-        );
-
-        if (response.statusCode == 200) {
-          print('Answer sent successfully');
-        } else {
-          print("Request failed with status: ${response.statusCode}");
-          throw Exception('Failed to send answer');
-        }
-      } catch (e) {
-        print("Request failed with exception: $e");
-        throw Exception('Failed to send answer');
-      }
-    } else {
-      try {
-        final response = await http.post(
-          Uri.parse(apiUrl),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-          body: jsonEncode({
-            'user_id': userId,
-            'question_id': widget.questionId,
-            'answer': newAnswer,
-          }),
-        );
-
-        if (response.statusCode == 200) {
-          print('Answer sent successfully');
-          widget.reloadData();
-        } else {
-          print("Request failed with status: ${response.statusCode}");
-          throw Exception('Failed to send answer');
-        }
-      } catch (e) {
-        print("Request failed with exception: $e");
-        throw Exception('Failed to send answer');
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SizedBox(
-          width: 300,
-          height: 50,
-          child: ClipPath(
-            clipper: BubbleClipper(),
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      focusNode: _focusNode,
-                      controller: _textController,
-                      decoration: const InputDecoration.collapsed(
-                        hintText: 'Typ je antwoord...',
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.send),
-                    onPressed: () {
-                      // Handle sending the message
-                      final newAnswer = _textController.text;
-                      _sendAnswer(newAnswer);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class BubbleClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-
-    path.moveTo(size.width - 20, size.height);
-    path.quadraticBezierTo(size.width, size.height, size.width, size.height - 20);
-
-    path.lineTo(size.width, 20);
-    path.quadraticBezierTo(size.width, 0, size.width - 20, 0);
-
-    path.lineTo(10, 0);
-    path.quadraticBezierTo(0, 0, 0, 20);
-
-    path.lineTo(0, size.height - 20);
-    path.quadraticBezierTo(0, size.height, 10, size.height);
-
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) {
-    return false;
   }
 }
