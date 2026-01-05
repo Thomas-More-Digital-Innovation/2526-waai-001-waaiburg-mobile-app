@@ -88,7 +88,6 @@ class _InputWidgetState extends State<InputWidget> {
         }
 
         return SizedBox(
-          width: 300,
           height: 50,
           child: ClipPath(
             clipper: BubbleClipper(),

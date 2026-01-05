@@ -92,25 +92,30 @@ class _InputContainerState extends State<InputContainer> {
     Question? nextQuestion = widget.inputLogic.getNextQuestionForState(widget.treeParts[widget.currentState]);
     bool allAnswered = widget.inputLogic.isTreeCompleted(widget.treeParts);
 
-    if (allAnswered) {
-      return const CompletionCard();
-    } else if (nextQuestion == null) {
-      return ElevatedButton(
-        onPressed: widget.onContinue,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        ),
-        child: const Text('Volgende'),
-      );
-    } else {
-      return InputWidget(
-        question: nextQuestion,
-        reloadData: _handleAnswer,
-        updateKeyboardVisibility: (bool isVisible) {
-          setState(() {});
-        },
-      );
-    }
+    return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: () {
+          if (allAnswered) {
+            return const CompletionCard();
+          } else if (nextQuestion == null) {
+            return ElevatedButton(
+              onPressed: widget.onContinue,
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 50),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              ),
+              child: const Text('Volgende'),
+            );
+          } else {
+            return InputWidget(
+              question: nextQuestion,
+              reloadData: _handleAnswer,
+              updateKeyboardVisibility: (bool isVisible) {
+                setState(() {});
+              },
+            );
+          }
+        }());
   }
 }
