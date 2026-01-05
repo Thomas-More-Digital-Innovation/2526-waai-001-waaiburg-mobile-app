@@ -8,8 +8,6 @@ import 'package:mobileapp/model/tree_part.dart';
 import 'package:mobileapp/screens/avatar/widgets/avatar_widget.dart';
 import 'package:mobileapp/screens/tree_refactor/tree_part.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/chat_bubble_constructor.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/completion_card.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/input.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/background.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/avatar.dart';
 import 'package:mobileapp/screens/tree/tree_constants.dart';
