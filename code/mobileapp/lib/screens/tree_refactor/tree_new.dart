@@ -13,9 +13,11 @@ import 'package:mobileapp/screens/tree_refactor/widgets/input.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/background.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/avatar.dart';
 import 'package:mobileapp/screens/tree/tree_constants.dart';
+import 'package:mobileapp/screens/tree_refactor/widgets/input_container.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/tree_loading.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/avatar_tooltip.dart';
 import 'package:mobileapp/screens/tree_refactor/logic/avatar_tooltip_controller.dart';
+import 'package:mobileapp/screens/tree_refactor/logic/input_logic.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
@@ -40,20 +42,11 @@ class _TreeNewState extends State<TreeNew> {
   AvatarConfiguration _avatarConfig = const AvatarConfiguration();
   bool _showAvatarTooltip = false;
   final AvatarTooltipController _avatarController = AvatarTooltipController();
+  final InputLogic _inputLogic = InputLogic();
 
   final Map<int, VideoPlayerController> _videoControllers = {};
 
   final ScrollController _chatScrollController = ScrollController();
-
-  void _scrollToBottom() {
-    if (_chatScrollController.hasClients) {
-      _chatScrollController.animateTo(
-        _chatScrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
-  }
 
   @override
   void initState() {
@@ -86,62 +79,6 @@ class _TreeNewState extends State<TreeNew> {
       setState(() {
         _avatarConfig = AvatarConfiguration.fromJson(jsonDecode(configJson));
       });
-    }
-  }
-
-  /// Background sync that preserves optimistic updates
-  /// Only updates answers that have been confirmed by the API (have real IDs)
-  Future<void> syncWithApi() async {
-    try {
-      List<dynamic> apiData = await fetchQuestionList();
-      List<TreePart> apiTreeParts = generateTreeParts(apiData[0], apiData[1]);
-
-      if (!mounted) return;
-
-      // Merge API data with local optimistic updates
-      // Keep local answers with temporary IDs (-1), update with API answers
-      for (int i = 0; i < treeParts!.length && i < apiTreeParts.length; i++) {
-        final localPart = treeParts![i];
-        final apiPart = apiTreeParts[i];
-
-        Map<Question, Answer?> mergedMap = {};
-        for (var entry in localPart.questionAnswerMap.entries) {
-          final question = entry.key;
-          final localAnswer = entry.value;
-
-          // Find corresponding API answer
-          Answer? apiAnswer;
-          for (var apiEntry in apiPart.questionAnswerMap.entries) {
-            if (apiEntry.key.id == question.id) {
-              apiAnswer = apiEntry.value;
-              break;
-            }
-          }
-
-          // Prefer API answer if it exists, otherwise keep local optimistic answer
-          if (apiAnswer != null) {
-            mergedMap[question] = apiAnswer;
-          } else if (localAnswer != null) {
-            mergedMap[question] = localAnswer;
-          } else {
-            mergedMap[question] = null;
-          }
-        }
-
-        treeParts![i] = TreePart(
-          id: localPart.id,
-          imagePath: localPart.imagePath,
-          videoPath: localPart.videoPath,
-          questionAnswerMap: mergedMap,
-        );
-      }
-
-      if (mounted) {
-        setState(() {});
-      }
-    } catch (e) {
-      // Silently fail background sync - optimistic update is still in place
-      debugPrint('Background sync failed: $e');
     }
   }
 
@@ -266,70 +203,36 @@ class _TreeNewState extends State<TreeNew> {
                   size: 250,
                 ),
               ),
-
-              SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 48),
-                  child: ChatBubbleConstructor(
-                    questionAnswerMap: treeParts![_currentState].questionAnswerMap,
-                    scrollController: _chatScrollController,
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: () {
-                  Question? nextQuestion = getNextQuestion(treeParts![_currentState].questionAnswerMap);
-
-                  if (allQuestionsAnswered) {
-                    return const CompletionCard();
-                  } else if (nextQuestion == null) {
-                    return ElevatedButton(
-                      onPressed: () => _updateTreeState(_currentState + 1),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              Positioned.fill(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SafeArea(
+                        child: ChatBubbleConstructor(
+                          questionAnswerMap: treeParts![_currentState].questionAnswerMap,
+                          scrollController: _chatScrollController,
+                        ),
                       ),
-                      child: const Text('Volgende'),
-                    );
-                  } else {
-                    return InputWidget(
-                      question: nextQuestion,
-                      reloadData: (Question answeredQuestion, String answerText) async {
-                        // Optimistically update local state immediately
-                        final optimisticAnswer = Answer(
-                          id: -1, // Temporary ID, will be replaced on API sync
-                          userId: -1,
-                          questionId: answeredQuestion.id,
-                          answer: answerText,
-                        );
-                        treeParts![_currentState] = treeParts![_currentState].copyWithAnswer(
-                          answeredQuestion,
-                          optimisticAnswer,
-                        );
-
-                        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
-
-                        // Check if this was the last question overall
-                        if (isTreeCompleted(treeParts!)) {
-                          setState(() {
-                            allQuestionsAnswered = true;
-                          });
-                          syncWithApi();
-                          return;
-                        }
-
-                        // Show typing indicator before revealing next question
-                        syncWithApi(); // Sync in background
+                    ),
+                    InputContainer(
+                      chatScrollController: _chatScrollController,
+                      onContinue: () => _updateTreeState(_currentState + 1),
+                      treeParts: treeParts!,
+                      currentState: _currentState,
+                      inputLogic: _inputLogic,
+                      onTreeUpdate: (newParts) {
+                        setState(() {
+                          treeParts = newParts;
+                        });
                       },
-                      updateKeyboardVisibility: (bool isVisible) {
-                        setState(() {});
+                      onAllQuestionsAnswered: (isAllAnswered) {
+                        setState(() {
+                          allQuestionsAnswered = isAllAnswered;
+                        });
                       },
-                    );
-                  }
-                }(),
+                    ),
+                  ],
+                ),
               ),
               // next button
               if (!isUnansweredTreePart && _currentState != maxTreeState)
