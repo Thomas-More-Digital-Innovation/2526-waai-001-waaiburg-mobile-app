@@ -6,7 +6,7 @@ import 'package:mobileapp/screens/info_segments.dart';
 import 'package:mobileapp/screens/info_contents.dart';
 import 'package:mobileapp/screens/news/news.dart';
 import 'package:mobileapp/screens/tree/tree_home.dart';
-import 'package:mobileapp/screens/user_details.dart';
+import 'package:mobileapp/screens/user_details/user_details.dart';
 import 'package:mobileapp/screens/avatar/avatar_customization_screen.dart';
 
 /// Route paths as constants to avoid typos and enable autocomplete
