@@ -8,6 +8,8 @@ class StylePicker extends StatelessWidget {
   final List<String> labels;
   final String partType;
   final String directory;
+  final List<int>? bodyIds;
+  final List<String>? customFileNames;
 
   const StylePicker({
     super.key,
@@ -17,6 +19,8 @@ class StylePicker extends StatelessWidget {
     required this.labels,
     required this.partType,
     required this.directory,
+    this.bodyIds,
+    this.customFileNames,
   });
 
   @override
@@ -29,7 +33,19 @@ class StylePicker extends StatelessWidget {
         itemCount: count,
         itemBuilder: (context, index) {
           final isSelected = currentStyle == index;
-          final assetPath = 'assets/avatar/$directory/${partType}_$index.png';
+          
+          String assetPath;
+          if (customFileNames != null) {
+            // Use custom file name (e.g., "pants_2_male")
+            assetPath = 'assets/avatar/$directory/${customFileNames![index]}.png';
+          } else if (bodyIds != null) {
+            // Use body ID mapping
+            final actualId = bodyIds![index];
+            assetPath = 'assets/avatar/$directory/${partType}_$actualId.png';
+          } else {
+            // Default: use index
+            assetPath = 'assets/avatar/$directory/${partType}_$index.png';
+          }
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),

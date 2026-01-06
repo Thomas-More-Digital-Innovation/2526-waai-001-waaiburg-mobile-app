@@ -31,13 +31,37 @@ class AvatarWidget extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
+          // Body (base) - at the back
+          Positioned(
+            top: -size * 0.13, // Move head up by 10%
+            child: _buildBodyPart(
+              'body',
+              config.bodyType,
+              ColorUtils.hexToColor(config.skinColor),
+            ),
+          ),
+          // Shoes (optional)
+          if (config.shoesId != null)
+            Positioned(
+              top: size * 0.59, // Position at the bottom for feet
+              left: size * 0.335, // Center horizontally
+              child: SizedBox(
+                width: size * 0.33, // Smaller width for shoes
+                height: size * 0.33, // Smaller height for shoes
+                child: _buildBodyPart(
+                  'shoes',
+                  config.shoesId!,
+                  ColorUtils.hexToColor(config.shoesColor),
+                ),
+              ),
+            ),
           // Pants
           Positioned(
-            top: size * 0.60, // Verplaats naar beneden (35% van totale hoogte)
-            left: size * 0.31, // Center horizontaal
+            top: size * 0.56, // Verplaats naar beneden (35% van totale hoogte)
+            left: size * 0.365, // Center horizontaal
             child: SizedBox(
-              width: size * 0.4, // 70% van de originele breedte
-              height: size * 0.4, // 70% van de originele hoogte
+              width: size * 0.28, // 70% van de originele breedte
+              height: size * 0.28, // 70% van de originele hoogte
               child: _buildBodyPart(
                 'pants',
                 config.pantsId,
@@ -47,11 +71,11 @@ class AvatarWidget extends StatelessWidget {
           ),
           // Shirt
           Positioned(
-            top: size * 0.28, // Verplaats naar beneden (35% van totale hoogte)
-            left: size * 0.31, // Center horizontaal
+            top: size * 0.31, // Verplaats naar beneden (35% van totale hoogte)
+            left: size * 0.355, // Center horizontaal
             child: SizedBox(
-              width: size * 0.4, // 70% van de originele breedte
-              height: size * 0.4, // 70% van de originele hoogte
+              width: size * 0.3, // 70% van de originele breedte
+              height: size * 0.3, // 70% van de originele hoogte
               child: _buildBodyPart(
                 'shirt',
                 config.shirtId,
@@ -59,32 +83,6 @@ class AvatarWidget extends StatelessWidget {
               ),
             ),
           ),
-          // Body (base) - now in front of clothes
-          Positioned(
-            top: -size * 0.13, // Move head up by 10%
-            child: _buildBodyPart(
-              'body',
-              config.bodyType,
-              ColorUtils.hexToColor(config.skinColor),
-            ),
-          ),
-          // Hair
-          Positioned.fill(
-            child: _buildBodyPart(
-              'hair',
-              config.hairId,
-              ColorUtils.hexToColor(config.hairColor),
-            ),
-          ),
-          // Accessories (optional)
-          if (config.accessoryId != null)
-            Positioned.fill(
-              child: _buildBodyPart(
-                'accessory',
-                config.accessoryId!,
-                Colors.transparent,
-              ),
-            ),
         ],
       ),
     );
@@ -94,21 +92,32 @@ class AvatarWidget extends StatelessWidget {
     'body': 'bodies',
     'shirt': 'shirts',
     'pants': 'pants',
-    'hair': 'hair',
-    'accessory': 'accessories',
+    'shoes': 'shoes',
   };
 
   Widget _buildBodyPart(String partType, int partId, Color color) {
     final directory = _directoryMap[partType] ?? partType;
-    final actualPartId = partType == 'body' ? 0 : partId;
-    final assetPath = 'assets/avatar/$directory/${partType}_$actualPartId.png';
+    
+    String fileName;
+    if (partType == 'shirt' && partId >= 2) {
+      // Gender-specific shirt
+      fileName = '${partType}_${partId}_${config.gender}';
+    } else if (partType == 'pants' && partId >= 2) {
+      // Gender-specific pants
+      fileName = '${partType}_${partId}_${config.gender}';
+    } else {
+      // Default naming
+      fileName = '${partType}_$partId';
+    }
+    
+    final assetPath = 'assets/avatar/$directory/$fileName.png';
 
     return Image.asset(
       assetPath,
       width: size,
       height: size,
-      color: partType == 'accessory' ? null : color,
-      colorBlendMode: partType == 'accessory' ? null : BlendMode.modulate,
+      color: color,
+      colorBlendMode: BlendMode.modulate,
       fit: BoxFit.contain,
       errorBuilder: (context, error, stackTrace) {
         return CustomPaint(
@@ -156,8 +165,8 @@ class AvatarPartPainter extends CustomPainter {
       case 'hair':
         _drawHair(canvas, size, center, paint, partId);
         break;
-      case 'accessory':
-        _drawAccessory(canvas, size, center, paint, partId);
+      case 'shoes':
+        _drawShoes(canvas, size, center, paint, partId);
         break;
     }
   }
@@ -294,46 +303,63 @@ class AvatarPartPainter extends CustomPainter {
     }
   }
 
-  void _drawAccessory(
+  void _drawShoes(
       Canvas canvas, Size size, Offset center, Paint paint, int style) {
-    final accessoryPaint = Paint()
-      ..color = Colors.black87
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-
     if (style == 0) {
-      // Glasses
-      // Left lens
-      canvas.drawCircle(
-        Offset(center.dx - size.width * 0.06, size.height * 0.32),
-        size.width * 0.05,
-        accessoryPaint,
-      );
-      // Right lens
-      canvas.drawCircle(
-        Offset(center.dx + size.width * 0.06, size.height * 0.32),
-        size.width * 0.05,
-        accessoryPaint,
-      );
-      // Bridge
-      canvas.drawLine(
-        Offset(center.dx - size.width * 0.01, size.height * 0.32),
-        Offset(center.dx + size.width * 0.01, size.height * 0.32),
-        accessoryPaint,
-      );
-    } else if (style == 1) {
-      // Hat
-      final hatPaint = Paint()..color = Colors.red;
+      // Sneakers
+      // Left shoe
       canvas.drawRRect(
         RRect.fromRectAndRadius(
-          Rect.fromCenter(
-            center: Offset(center.dx, size.height * 0.24),
-            width: size.width * 0.3,
-            height: size.height * 0.08,
+          Rect.fromLTWH(
+            center.dx - size.width * 0.15,
+            size.height * 0.95,
+            size.width * 0.12,
+            size.height * 0.05,
           ),
-          const Radius.circular(15),
+          const Radius.circular(5),
         ),
-        hatPaint,
+        paint,
+      );
+      // Right shoe
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(
+            center.dx + size.width * 0.03,
+            size.height * 0.95,
+            size.width * 0.12,
+            size.height * 0.05,
+          ),
+          const Radius.circular(5),
+        ),
+        paint,
+      );
+    } else if (style == 1) {
+      // Boots
+      // Left boot
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(
+            center.dx - size.width * 0.15,
+            size.height * 0.90,
+            size.width * 0.12,
+            size.height * 0.10,
+          ),
+          const Radius.circular(5),
+        ),
+        paint,
+      );
+      // Right boot
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(
+            center.dx + size.width * 0.03,
+            size.height * 0.90,
+            size.width * 0.12,
+            size.height * 0.10,
+          ),
+          const Radius.circular(5),
+        ),
+        paint,
       );
     }
   }

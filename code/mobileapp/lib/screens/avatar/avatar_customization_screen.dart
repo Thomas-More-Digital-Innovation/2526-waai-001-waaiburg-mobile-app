@@ -3,7 +3,6 @@ import 'package:mobileapp/model/avatar_configuration.dart';
 import 'package:mobileapp/screens/avatar/widgets/avatar_widget.dart';
 import 'package:mobileapp/screens/avatar/widgets/color_picker_grid.dart';
 import 'package:mobileapp/screens/avatar/widgets/style_picker.dart';
-import 'package:mobileapp/screens/avatar/widgets/accessory_picker.dart';
 import 'package:mobileapp/screens/avatar/models/avatar_customization_data.dart';
 import 'package:mobileapp/screens/avatar/utils/color_utils.dart';
 import 'package:mobileapp/shared/widgets/header.dart';
@@ -56,6 +55,23 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
     }
   }
 
+  void _updateBodyType(int type) {
+    setState(() {
+      _currentConfig = _currentConfig.copyWith(bodyType: type);
+    });
+  }
+
+  void _updateGender(String gender) {
+    setState(() {
+      // When gender changes, reset bodyType to first option for that gender
+      final newBodyType = AvatarCustomizationData.genderBodyMap[gender]![0];
+      _currentConfig = _currentConfig.copyWith(
+        gender: gender,
+        bodyType: newBodyType,
+      );
+    });
+  }
+
   void _updateSkinColor(Color color) {
     setState(() {
       _currentConfig =
@@ -89,22 +105,16 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
     });
   }
 
-  void _updateHairStyle(int style) {
+  void _updateShoesStyle(int style) {
     setState(() {
-      _currentConfig = _currentConfig.copyWith(hairId: style);
+      _currentConfig = _currentConfig.copyWith(shoesId: style);
     });
   }
 
-  void _updateHairColor(Color color) {
+  void _updateShoesColor(Color color) {
     setState(() {
       _currentConfig =
-          _currentConfig.copyWith(hairColor: ColorUtils.colorToHex(color));
-    });
-  }
-
-  void _updateAccessory(int? accessoryId) {
-    setState(() {
-      _currentConfig = _currentConfig.copyWith(accessoryId: accessoryId);
+          _currentConfig.copyWith(shoesColor: ColorUtils.colorToHex(color));
     });
   }
 
@@ -165,14 +175,15 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
             child: AvatarOptionsGrid(
               selectedCategory: _selectedCategory,
               currentConfig: _currentConfig,
+              onGenderUpdate: _updateGender,
+              onBodyTypeUpdate: _updateBodyType,
               onSkinColorUpdate: _updateSkinColor,
               onShirtStyleUpdate: _updateShirtStyle,
               onShirtColorUpdate: _updateShirtColor,
               onPantsStyleUpdate: _updatePantsStyle,
               onPantsColorUpdate: _updatePantsColor,
-              onHairStyleUpdate: _updateHairStyle,
-              onHairColorUpdate: _updateHairColor,
-              onAccessoryUpdate: _updateAccessory,
+              onShoesStyleUpdate: _updateShoesStyle,
+              onShoesColorUpdate: _updateShoesColor,
             ),
           ),
 
@@ -210,40 +221,61 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
 class AvatarOptionsGrid extends StatelessWidget {
   final int selectedCategory;
   final AvatarConfiguration currentConfig;
+  final Function(String) onGenderUpdate;
+  final Function(int) onBodyTypeUpdate;
   final Function(Color) onSkinColorUpdate;
   final Function(int) onShirtStyleUpdate;
   final Function(Color) onShirtColorUpdate;
   final Function(int) onPantsStyleUpdate;
   final Function(Color) onPantsColorUpdate;
-  final Function(int) onHairStyleUpdate;
-  final Function(Color) onHairColorUpdate;
-  final Function(int?) onAccessoryUpdate;
+  final Function(int) onShoesStyleUpdate;
+  final Function(Color) onShoesColorUpdate;
 
   const AvatarOptionsGrid({
     super.key,
     required this.selectedCategory,
     required this.currentConfig,
+    required this.onGenderUpdate,
+    required this.onBodyTypeUpdate,
     required this.onSkinColorUpdate,
     required this.onShirtStyleUpdate,
     required this.onShirtColorUpdate,
     required this.onPantsStyleUpdate,
     required this.onPantsColorUpdate,
-    required this.onHairStyleUpdate,
-    required this.onHairColorUpdate,
-    required this.onAccessoryUpdate,
+    required this.onShoesStyleUpdate,
+    required this.onShoesColorUpdate,
   });
 
   @override
   Widget build(BuildContext context) {
     switch (selectedCategory) {
       case 0:
-        return ColorPickerGrid(
-          colors: AvatarCustomizationData.skinColors,
-          currentColor: ColorUtils.hexToColor(currentConfig.skinColor),
-          onColorSelected: onSkinColorUpdate,
+        // Gender selection
+        return _GenderSelection(
+          currentGender: currentConfig.gender,
+          onGenderSelected: onGenderUpdate,
         );
 
       case 1:
+        // Body type selection (gender-specific)
+        final bodyOptions = AvatarCustomizationData.genderBodyMap[currentConfig.gender]!;
+        final bodyLabels = AvatarCustomizationData.genderBodyLabels[currentConfig.gender]!;
+        final currentBodyIndex = bodyOptions.indexOf(currentConfig.bodyType);
+        
+        return _StyleAndColorSection(
+          styleCount: bodyOptions.length,
+          currentStyle: currentBodyIndex >= 0 ? currentBodyIndex : 0,
+          onStyleSelected: (index) => onBodyTypeUpdate(bodyOptions[index]),
+          labels: bodyLabels,
+          partType: 'body',
+          directory: 'bodies',
+          colors: AvatarCustomizationData.skinColors,
+          currentColor: ColorUtils.hexToColor(currentConfig.skinColor),
+          onColorSelected: onSkinColorUpdate,
+          bodyIds: bodyOptions,
+        );
+
+      case 2:
         return _StyleAndColorSection(
           styleCount: AvatarCustomizationData.shirtStyleCount,
           currentStyle: currentConfig.shirtId,
@@ -254,9 +286,10 @@ class AvatarOptionsGrid extends StatelessWidget {
           colors: AvatarCustomizationData.shirtColors,
           currentColor: ColorUtils.hexToColor(currentConfig.shirtColor),
           onColorSelected: onShirtColorUpdate,
+          customFileNames: AvatarCustomizationData.genderShirtFiles[currentConfig.gender]!,
         );
 
-      case 2:
+      case 3:
         return _StyleAndColorSection(
           styleCount: AvatarCustomizationData.pantsStyleCount,
           currentStyle: currentConfig.pantsId,
@@ -267,30 +300,127 @@ class AvatarOptionsGrid extends StatelessWidget {
           colors: AvatarCustomizationData.pantsColors,
           currentColor: ColorUtils.hexToColor(currentConfig.pantsColor),
           onColorSelected: onPantsColorUpdate,
-        );
-
-      case 3:
-        return _StyleAndColorSection(
-          styleCount: AvatarCustomizationData.hairStyleCount,
-          currentStyle: currentConfig.hairId,
-          onStyleSelected: onHairStyleUpdate,
-          labels: AvatarCustomizationData.hairLabels,
-          partType: 'hair',
-          directory: 'hair',
-          colors: AvatarCustomizationData.hairColors,
-          currentColor: ColorUtils.hexToColor(currentConfig.hairColor),
-          onColorSelected: onHairColorUpdate,
+          customFileNames: AvatarCustomizationData.genderPantsFiles[currentConfig.gender]!,
         );
 
       case 4:
-        return AccessoryPicker(
-          currentAccessoryId: currentConfig.accessoryId,
-          onAccessorySelected: onAccessoryUpdate,
+        return _StyleAndColorSection(
+          styleCount: AvatarCustomizationData.shoesStyleCount,
+          currentStyle: currentConfig.shoesId ?? 0,
+          onStyleSelected: onShoesStyleUpdate,
+          labels: AvatarCustomizationData.shoesLabels,
+          partType: 'shoes',
+          directory: 'shoes',
+          colors: AvatarCustomizationData.shoesColors,
+          currentColor: ColorUtils.hexToColor(currentConfig.shoesColor),
+          onColorSelected: onShoesColorUpdate,
         );
 
       default:
         return Container();
     }
+  }
+}
+
+class _GenderSelection extends StatelessWidget {
+  final String currentGender;
+  final Function(String) onGenderSelected;
+
+  const _GenderSelection({
+    required this.currentGender,
+    required this.onGenderSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Kies je geslacht:',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 40),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _GenderCard(
+                  label: 'Man',
+                  icon: Icons.person,
+                  isSelected: currentGender == 'male',
+                  onTap: () => onGenderSelected('male'),
+                ),
+                _GenderCard(
+                  label: 'Vrouw',
+                  icon: Icons.person_outline,
+                  isSelected: currentGender == 'female',
+                  onTap: () => onGenderSelected('female'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GenderCard extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _GenderCard({
+    required this.label,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 140,
+        height: 160,
+        decoration: BoxDecoration(
+          color: isSelected 
+              ? Theme.of(context).colorScheme.secondary
+              : Colors.grey[200],
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected 
+                ? Theme.of(context).colorScheme.secondary
+                : Colors.grey[300]!,
+            width: 3,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 80,
+              color: isSelected ? Colors.white : Colors.grey[700],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: isSelected ? Colors.white : Colors.grey[700],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -304,6 +434,8 @@ class _StyleAndColorSection extends StatelessWidget {
   final List<Color> colors;
   final Color currentColor;
   final Function(Color) onColorSelected;
+  final List<int>? bodyIds;
+  final List<String>? customFileNames;
 
   const _StyleAndColorSection({
     required this.styleCount,
@@ -315,6 +447,8 @@ class _StyleAndColorSection extends StatelessWidget {
     required this.colors,
     required this.currentColor,
     required this.onColorSelected,
+    this.bodyIds,
+    this.customFileNames,
   });
 
   @override
@@ -335,6 +469,8 @@ class _StyleAndColorSection extends StatelessWidget {
           labels: labels,
           partType: partType,
           directory: directory,
+          bodyIds: bodyIds,
+          customFileNames: customFileNames,
         ),
         Padding(
           padding: const EdgeInsets.all(16.0),
