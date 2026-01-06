@@ -1,80 +1,80 @@
 class AvatarConfiguration {
+  final String gender; // 'male' or 'female'
   final int bodyType;
   final int shirtId;
   final int pantsId;
-  final int hairId;
-  final int? accessoryId;
+  final int? shoesId;
   final String skinColor;
   final String shirtColor;
   final String pantsColor;
-  final String hairColor;
+  final String shoesColor;
 
   const AvatarConfiguration({
+    this.gender = 'male',
     this.bodyType = 0,
     this.shirtId = 0,
     this.pantsId = 0,
-    this.hairId = 0,
-    this.accessoryId,
+    this.shoesId,
     this.skinColor = '#FFD7B5', // Default skin color
     this.shirtColor = '#4A90E2', // Default blue shirt
     this.pantsColor = '#2C3E50', // Default dark pants
-    this.hairColor = '#5D4037', // Default brown hair
+    this.shoesColor = '#000000', // Default black shoes
   });
 
   factory AvatarConfiguration.fromJson(Map<String, dynamic> json) {
     return AvatarConfiguration(
+      gender: json['gender'] ?? 'male',
       bodyType: json['bodyType'] ?? 0,
       shirtId: json['shirtId'] ?? 0,
       pantsId: json['pantsId'] ?? 0,
-      hairId: json['hairId'] ?? 0,
-      accessoryId: json['accessoryId'],
+      shoesId: json['shoesId'],
       skinColor: json['skinColor'] ?? '#FFD7B5',
       shirtColor: json['shirtColor'] ?? '#4A90E2',
       pantsColor: json['pantsColor'] ?? '#2C3E50',
-      hairColor: json['hairColor'] ?? '#5D4037',
+      shoesColor: json['shoesColor'] ?? '#000000',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'gender': gender,
       'bodyType': bodyType,
       'shirtId': shirtId,
       'pantsId': pantsId,
-      'hairId': hairId,
-      'accessoryId': accessoryId,
+      'shoesId': shoesId,
       'skinColor': skinColor,
       'shirtColor': shirtColor,
       'pantsColor': pantsColor,
-      'hairColor': hairColor,
+      'shoesColor': shoesColor,
     };
   }
 
   AvatarConfiguration copyWith({
+    String? gender,
     int? bodyType,
     int? shirtId,
     int? pantsId,
-    int? hairId,
-    int? accessoryId,
+    int? shoesId,
     String? skinColor,
     String? shirtColor,
     String? pantsColor,
-    String? hairColor,
+    String? shoesColor,
   }) {
     return AvatarConfiguration(
+      gender: gender ?? this.gender,
       bodyType: bodyType ?? this.bodyType,
       shirtId: shirtId ?? this.shirtId,
       pantsId: pantsId ?? this.pantsId,
-      hairId: hairId ?? this.hairId,
-      accessoryId: accessoryId ?? this.accessoryId,
+      shoesId: shoesId ?? this.shoesId,
       skinColor: skinColor ?? this.skinColor,
       shirtColor: shirtColor ?? this.shirtColor,
       pantsColor: pantsColor ?? this.pantsColor,
-      hairColor: hairColor ?? this.hairColor,
+      shoesColor: shoesColor ?? this.shoesColor,
     );
   }
 
   @override
   String toString() {
-    return 'AvatarConfiguration(bodyType: $bodyType, shirtId: $shirtId, pantsId: $pantsId, hairId: $hairId)';
+    return 'AvatarConfiguration(bodyType: $bodyType, shirtId: $shirtId, pantsId: $pantsId)';
   }
 }

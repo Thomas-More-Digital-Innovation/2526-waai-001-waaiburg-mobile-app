@@ -3,12 +3,27 @@ import 'package:flutter/material.dart';
 /// Data class for avatar customization options
 class AvatarCustomizationData {
   static const List<String> categories = [
+    'Geslacht',
     'Lichaam',
     'T-shirt',
     'Broek',
-    'Haar',
-    'Extra',
+    'Schoenen',
   ];
+
+  static const List<String> genderOptions = [
+    'Man',
+    'Vrouw',
+  ];
+
+  static const Map<String, List<int>> genderBodyMap = {
+    'male': [0, 4, 5],
+    'female': [1, 2, 3],
+  };
+
+  static const Map<String, List<String>> genderBodyLabels = {
+    'male': ['Lichaam 1', 'Lichaam 2', 'Lichaam 3'],
+    'female': ['Lichaam 1', 'Lichaam 2', 'Lichaam 3'],
+  };
 
   static const List<Color> skinColors = [
     Color(0xFFFFD7B5), // Light
@@ -45,62 +60,54 @@ class AvatarCustomizationData {
     Color(0xFF8E44AD), // Purple
   ];
 
-  static const List<Color> hairColors = [
-    Color(0xFF5D4037), // Brown
-    Color(0xFF1A1A1A), // Black
-    Color(0xFFFFEB3B), // Blonde
-    Color(0xFFE53935), // Red
-    Color(0xFF9E9E9E), // Gray
-    Color(0xFFFF6F00), // Orange
+  static const List<Color> shoesColors = [
+    Colors.black,
+    Colors.white,
+    Color(0xFF8B4513), // Brown
+    Color(0xFF4A90E2), // Blue
+    Color(0xFFE74C3C), // Red
+    Color(0xFF2ECC71), // Green
+    Color(0xFFF39C12), // Orange
+    Color(0xFF9B59B6), // Purple
+  ];
+
+  static const List<String> bodyLabels = [
+    'Lichaam 1',
+    'Lichaam 2',
+    'Lichaam 3',
   ];
 
   static const List<String> shirtLabels = [
-    'Korte Mouwen',
+    'T-Shirt',
+    'Trui',
+    'Hemd',
     'Hoodie',
-    'Stijl 2',
-    'Stijl 3',
-    'Stijl 4',
   ];
+
+  static const Map<String, List<String>> genderShirtFiles = {
+    'male': ['shirt_0', 'shirt_1', 'shirt_2_male', 'shirt_3_male'],
+    'female': ['shirt_0', 'shirt_1', 'shirt_2_female', 'shirt_3_female'],
+  };
 
   static const List<String> pantsLabels = [
     'Korte Broek',
     'Lange Broek',
-    'Stijl 2',
-    'Stijl 3',
+    'Lange Broek 2',
+    'Lange Broek 3',
   ];
 
-  static const List<String> hairLabels = [
-    'Stijl 0',
-    'Stijl 1',
-    'Stijl 2',
-    'Stijl 3',
-    'Stijl 4',
+  static const Map<String, List<String>> genderPantsFiles = {
+    'male': ['pants_0', 'pants_1', 'pants_2_male', 'pants_3_male'],
+    'female': ['pants_0', 'pants_1', 'pants_2_female', 'pants_3_female'],
+  };
+
+  static const List<String> shoesLabels = [
+    'Sneakers',
+    'Laarzen',
   ];
 
-  static final List<AccessoryOption> accessories = [
-    AccessoryOption(id: null, name: 'Geen', icon: Icons.close),
-    AccessoryOption(id: 0, name: 'Bril 1', icon: Icons.remove_red_eye),
-    AccessoryOption(id: 1, name: 'Bril 2', icon: Icons.visibility),
-    AccessoryOption(id: 2, name: 'Hoed', icon: Icons.face),
-    AccessoryOption(id: 3, name: 'Cap', icon: Icons.sports_baseball),
-    AccessoryOption(id: 4, name: 'Oorbellen', icon: Icons.circle_outlined),
-    AccessoryOption(id: 5, name: 'Ketting', icon: Icons.horizontal_rule),
-  ];
-
-  static const int shirtStyleCount = 5;
+  static const int bodyStyleCount = 3;
+  static const int shirtStyleCount = 4;
   static const int pantsStyleCount = 4;
-  static const int hairStyleCount = 5;
-}
-
-/// Model for accessory options
-class AccessoryOption {
-  final int? id;
-  final String name;
-  final IconData icon;
-
-  const AccessoryOption({
-    required this.id,
-    required this.name,
-    required this.icon,
-  });
+  static const int shoesStyleCount = 2;
 }
