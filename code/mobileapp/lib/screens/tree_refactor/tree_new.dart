@@ -7,9 +7,9 @@ import 'package:mobileapp/model/qna.dart';
 import 'package:mobileapp/model/tree_part.dart';
 import 'package:mobileapp/screens/avatar/widgets/avatar_widget.dart';
 import 'package:mobileapp/screens/tree_refactor/tree_part.dart';
+import 'package:mobileapp/screens/tree_refactor/widgets/avatar_icon.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/chat_bubble_constructor.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/background.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/avatar.dart';
 import 'package:mobileapp/screens/tree/tree_constants.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/input_container.dart';
 import 'package:mobileapp/screens/tree_refactor/widgets/tree_loading.dart';
@@ -18,6 +18,8 @@ import 'package:mobileapp/screens/tree_refactor/logic/avatar_tooltip_controller.
 import 'package:mobileapp/screens/tree_refactor/logic/input_logic.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
+
+// TODO: remove animations when looking back to a previous question
 
 class TreeNew extends StatefulWidget {
   const TreeNew({super.key});
@@ -173,7 +175,8 @@ class _TreeNewState extends State<TreeNew> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           actions: [
-            Avatar(
+            AvatarIcon(
+              avatarConfiguration: _avatarConfig,
               callback: () {
                 setState(() {
                   _checkAvatarTooltip();

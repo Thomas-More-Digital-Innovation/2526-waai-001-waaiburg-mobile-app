@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/config/env.dart';
 import 'package:mobileapp/model/avatar_configuration.dart';
 import 'package:mobileapp/screens/avatar/utils/color_utils.dart';
 
@@ -97,7 +98,7 @@ class AvatarWidget extends StatelessWidget {
 
   Widget _buildBodyPart(String partType, int partId, Color color) {
     final directory = _directoryMap[partType] ?? partType;
-    
+
     String fileName;
     if (partType == 'shirt' && partId >= 2) {
       // Gender-specific shirt
@@ -109,8 +110,8 @@ class AvatarWidget extends StatelessWidget {
       // Default naming
       fileName = '${partType}_$partId';
     }
-    
-    final assetPath = 'assets/avatar/$directory/$fileName.png';
+
+    final assetPath = '$avatarPath/$directory/$fileName.png';
 
     return Image.asset(
       assetPath,
@@ -225,8 +226,7 @@ class AvatarPartPainter extends CustomPainter {
     );
   }
 
-  void _drawShirt(
-      Canvas canvas, Size size, Offset center, Paint paint, int style) {
+  void _drawShirt(Canvas canvas, Size size, Offset center, Paint paint, int style) {
     if (style == 0) {
       // T-shirt
       final shirtRect = RRect.fromRectAndRadius(
@@ -256,8 +256,7 @@ class AvatarPartPainter extends CustomPainter {
     }
   }
 
-  void _drawPants(
-      Canvas canvas, Size size, Offset center, Paint paint, int style) {
+  void _drawPants(Canvas canvas, Size size, Offset center, Paint paint, int style) {
     if (style == 0) {
       // Long pants
       _drawLeg(canvas, size, center, paint, isLeft: true, length: 0.25);
@@ -269,8 +268,7 @@ class AvatarPartPainter extends CustomPainter {
     }
   }
 
-  void _drawHair(
-      Canvas canvas, Size size, Offset center, Paint paint, int style) {
+  void _drawHair(Canvas canvas, Size size, Offset center, Paint paint, int style) {
     if (style == 0) {
       // Short hair
       final hairPath = Path();
@@ -303,8 +301,7 @@ class AvatarPartPainter extends CustomPainter {
     }
   }
 
-  void _drawShoes(
-      Canvas canvas, Size size, Offset center, Paint paint, int style) {
+  void _drawShoes(Canvas canvas, Size size, Offset center, Paint paint, int style) {
     if (style == 0) {
       // Sneakers
       // Left shoe
@@ -414,8 +411,6 @@ class AvatarPartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(AvatarPartPainter oldDelegate) {
-    return oldDelegate.partType != partType ||
-        oldDelegate.partId != partId ||
-        oldDelegate.color != color;
+    return oldDelegate.partType != partType || oldDelegate.partId != partId || oldDelegate.color != color;
   }
 }
