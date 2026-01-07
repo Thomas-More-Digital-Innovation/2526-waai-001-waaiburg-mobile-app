@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/config/routes.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobileapp/model/avatar_configuration.dart';
 import 'package:mobileapp/screens/tree_refactor/logic/avatar_tooltip_controller.dart';
 
-class Avatar extends StatefulWidget {
+class AvatarIcon extends StatefulWidget {
+  final AvatarConfiguration avatarConfiguration;
   final Function() callback;
-  const Avatar({super.key, required this.callback});
+  const AvatarIcon({super.key, required this.callback, required this.avatarConfiguration});
 
   @override
-  State<Avatar> createState() => _AvatarState();
+  State<AvatarIcon> createState() => _AvatarIconState();
 }
 
-class _AvatarState extends State<Avatar> {
+class _AvatarIconState extends State<AvatarIcon> {
   bool hasSeenAvatarScreen = false;
   final AvatarTooltipController _controller = AvatarTooltipController();
 
@@ -33,6 +35,7 @@ class _AvatarState extends State<Avatar> {
 
   @override
   Widget build(BuildContext context) {
+    final avatarPath = 'assets/avatar/bodies/body_${widget.avatarConfiguration.bodyType}.png';
     return ElevatedButton(
       style: ElevatedButton.styleFrom(fixedSize: const Size(56, 56), shape: const CircleBorder(), padding: EdgeInsets.zero),
       onPressed: () {
@@ -48,7 +51,7 @@ class _AvatarState extends State<Avatar> {
           child: Transform.scale(
             scale: 2.5,
             child: Image.asset(
-              'assets/avatar/bodies/body_0.png',
+              avatarPath,
             ),
           ),
         ),
