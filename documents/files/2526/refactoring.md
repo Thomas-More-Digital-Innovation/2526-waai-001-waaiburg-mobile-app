@@ -24,8 +24,21 @@ De volledige info content wordt gequeried met 1 [endpoint](https://dewaaiburgapp
 Nieuws & info pagina's worden allebei in de zelfde endpoint opgeslagen. Er is geen manier om specifieke nieuws of info content te vragen.
 De totale grote die opgevraagd word voor elke pagina is 176.67kB (momenteel). Dit bestaat uit alle statische info & een test nieuws artikel. Mochten er 10 nieuws artikels, zou de grote al snel groeien. Dit wordt dus voor elke pagina opgevraagd, dus mocht je elke pagina willen lezen zit je aan de 30 - 50 API calls, wat niet ideaal is voor mensen met een mobiel netwerk.
 
-## Refactoring suggesties
+### Refactoring suggesties
 
-[ ] Cache statische content en foto's
+[x] Cache statische content en foto's
 [ ] Update API om id parameter toe te voegen aan infoContent endpoint
 [ ] InfoContent endpoint endpoint zonder id parameter standaard niet de content mee te geven, aangezien content de meeste data bevat. Deze zou dan opgevraagd worden met de parameter.
+
+## Private deel
+
+Een deel van de app is privaat en heeft een login nodig. We hebben na de eerste meeting met de klant een login gekregen om dit deel ook te kunnen testen. Hierbij zijn ook een aantal probleempjes aan het licht gekomen
+
+### Memory leak
+
+De video speler bevat een memory leak. Na dat de video speler klaar was met spelen, werd deze niet gedisposed waardoor de app na een tijdje zou kunnen crashen.
+Er zaten ook nog wat probleempjes in het laden.
+
+### Refactoring
+
+De structuur was niet ideaal en de UX was niet altijd goed. Meerdere vragen per groeipunt werden opgeplitst over verschillende pagina's. We hebben besloten om deze te combineren zodat we per pagina 1 groeipunt hebben met 1 tot meerdere vragen. 
