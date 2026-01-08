@@ -453,40 +453,44 @@ class _StyleAndColorSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            'Kies een stijl:',
-            style: Theme.of(context).textTheme.titleMedium,
+    return SingleChildScrollView(
+      key: ValueKey('${partType}_scroll'), // Reset scroll position when category changes
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Kies een stijl:',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ),
-        ),
-        StylePicker(
-          count: styleCount,
-          currentStyle: currentStyle,
-          onStyleSelected: onStyleSelected,
-          labels: labels,
-          partType: partType,
-          directory: directory,
-          bodyIds: bodyIds,
-          customFileNames: customFileNames,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            'Kies een kleur:',
-            style: Theme.of(context).textTheme.titleMedium,
+          StylePicker(
+            count: styleCount,
+            currentStyle: currentStyle,
+            onStyleSelected: onStyleSelected,
+            labels: labels,
+            partType: partType,
+            directory: directory,
+            bodyIds: bodyIds,
+            customFileNames: customFileNames,
           ),
-        ),
-        Expanded(
-          child: ColorPickerGrid(
-            colors: colors,
-            currentColor: currentColor,
-            onColorSelected: onColorSelected,
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Kies een kleur:',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ),
-        ),
-      ],
+          SizedBox(
+            height: 400, // Fixed height for color grid
+            child: ColorPickerGrid(
+              colors: colors,
+              currentColor: currentColor,
+              onColorSelected: onColorSelected,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
