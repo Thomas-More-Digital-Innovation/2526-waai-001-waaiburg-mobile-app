@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mobileapp/api/question_list.dart';
 import 'package:mobileapp/model/qna.dart';
 import 'package:mobileapp/model/tree_part.dart';
-import 'package:mobileapp/screens/tree_refactor/tree_part.dart';
+import 'package:mobileapp/screens/tree_of_life/tree_part.dart';
 
 class InputLogic {
   /// Background sync that preserves optimistic updates

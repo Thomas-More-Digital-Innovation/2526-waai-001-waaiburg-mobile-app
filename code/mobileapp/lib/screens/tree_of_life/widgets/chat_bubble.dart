@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/bubble_clipper.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/bubble_clipper.dart';
 
 enum ChatOrigin {
   left,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/model/qna.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/chat_bubble.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/chat_bubble.dart';
 
 class ChatBubbleConstructor extends StatelessWidget {
   final Map<Question, Answer?> questionAnswerMap;

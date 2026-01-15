@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/chat_bubble.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/chat_bubble.dart';
 
 class ChatBubbleClipper extends CustomClipper<Path> {
   final ChatOrigin chatOrigin;

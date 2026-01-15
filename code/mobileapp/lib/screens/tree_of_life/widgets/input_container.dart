@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/model/qna.dart';
 import 'package:mobileapp/model/tree_part.dart';
-import 'package:mobileapp/screens/tree_refactor/logic/input_logic.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/completion_card.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/input.dart';
+import 'package:mobileapp/screens/tree_of_life/logic/input_logic.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/completion_card.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/input.dart';
 
 class InputContainer extends StatefulWidget {
   final ScrollController chatScrollController;

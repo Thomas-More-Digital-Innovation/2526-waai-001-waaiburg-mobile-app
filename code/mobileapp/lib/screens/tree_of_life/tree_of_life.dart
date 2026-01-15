@@ -6,27 +6,27 @@ import 'package:mobileapp/model/avatar_configuration.dart';
 import 'package:mobileapp/model/qna.dart';
 import 'package:mobileapp/model/tree_part.dart';
 import 'package:mobileapp/screens/avatar/widgets/avatar_widget.dart';
-import 'package:mobileapp/screens/tree_refactor/tree_part.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/avatar_icon.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/chat_bubble_constructor.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/background.dart';
+import 'package:mobileapp/screens/tree_of_life/tree_part.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/avatar_icon.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/chat_bubble_constructor.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/background.dart';
 import 'package:mobileapp/screens/tree/tree_constants.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/input_container.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/tree_loading.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/avatar_tooltip.dart';
-import 'package:mobileapp/screens/tree_refactor/logic/avatar_tooltip_controller.dart';
-import 'package:mobileapp/screens/tree_refactor/logic/input_logic.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/input_container.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/tree_loading.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/avatar_tooltip.dart';
+import 'package:mobileapp/screens/tree_of_life/logic/avatar_tooltip_controller.dart';
+import 'package:mobileapp/screens/tree_of_life/logic/input_logic.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
-class TreeNew extends StatefulWidget {
-  const TreeNew({super.key});
+class TreeOfLife extends StatefulWidget {
+  const TreeOfLife({super.key});
 
   @override
-  State<TreeNew> createState() => _TreeNewState();
+  State<TreeOfLife> createState() => _TreeOfLifeState();
 }
 
-class _TreeNewState extends State<TreeNew> {
+class _TreeOfLifeState extends State<TreeOfLife> {
   List<TreePart>? treeParts;
   Map<int, List<Question>>? questionsMap;
   List<Answer>? answersList;

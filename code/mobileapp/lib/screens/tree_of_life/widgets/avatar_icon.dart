@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobileapp/config/routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobileapp/model/avatar_configuration.dart';
-import 'package:mobileapp/screens/tree_refactor/logic/avatar_tooltip_controller.dart';
+import 'package:mobileapp/screens/tree_of_life/logic/avatar_tooltip_controller.dart';
 
 class AvatarIcon extends StatefulWidget {
   final AvatarConfiguration avatarConfiguration;
