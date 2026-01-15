@@ -10,7 +10,10 @@ class ChatBubbleConstructor extends StatelessWidget {
     super.key,
     required this.questionAnswerMap,
     required this.scrollController,
+    this.onEditAnswer,
   });
+
+  final Function(Question, Answer)? onEditAnswer;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +26,11 @@ class ChatBubbleConstructor extends StatelessWidget {
           for (var entry in questionAnswerMap.entries) {
             children.add(ChatBubble(text: entry.key.content, isUser: false));
             if (entry.value != null) {
-              children.add(ChatBubble(text: entry.value!.answer, isUser: true));
+              children.add(ChatBubble(
+                text: entry.value!.answer,
+                isUser: true,
+                onEdit: onEditAnswer != null ? () => onEditAnswer!(entry.key, entry.value!) : null,
+              ));
             } else {
               break;
             }

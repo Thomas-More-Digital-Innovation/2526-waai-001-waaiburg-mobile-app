@@ -13,6 +13,9 @@ class InputContainer extends StatefulWidget {
   final Function(List<TreePart>) onTreeUpdate;
   final Function(bool) onAllQuestionsAnswered;
   final InputLogic inputLogic;
+  final Question? editingQuestion;
+  final Answer? editingAnswer;
+  final VoidCallback? onCancelEdit;
 
   const InputContainer({
     super.key,
@@ -23,6 +26,9 @@ class InputContainer extends StatefulWidget {
     required this.onTreeUpdate,
     required this.onAllQuestionsAnswered,
     required this.inputLogic,
+    this.editingQuestion,
+    this.editingAnswer,
+    this.onCancelEdit,
   });
 
   @override
@@ -69,6 +75,9 @@ class _InputContainerState extends State<InputContainer> {
       final syncedParts = await widget.inputLogic.syncWithApi(currentParts);
       if (mounted) {
         widget.onTreeUpdate(syncedParts);
+        if (widget.onCancelEdit != null) {
+          widget.onCancelEdit!();
+        }
       }
       return;
     }
@@ -78,6 +87,9 @@ class _InputContainerState extends State<InputContainer> {
     widget.inputLogic.syncWithApi(currentParts).then((syncedParts) {
       if (mounted) {
         widget.onTreeUpdate(syncedParts);
+        if (widget.onCancelEdit != null) {
+          widget.onCancelEdit!();
+        }
       }
     });
   }
@@ -91,11 +103,61 @@ class _InputContainerState extends State<InputContainer> {
 
     Question? nextQuestion = widget.inputLogic.getNextQuestionForState(widget.treeParts[widget.currentState]);
     bool allAnswered = widget.inputLogic.isTreeCompleted(widget.treeParts);
+    bool isEditing = widget.editingQuestion != null;
 
     return Padding(
         padding: const EdgeInsets.all(8.0),
         child: () {
-          if (allAnswered) {
+          if (isEditing) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  spacing: 0.0,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(12.0),
+                          topRight: Radius.circular(12.0),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "Antwoord bewerken",
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                                backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                              ),
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: widget.onCancelEdit,
+                      child: Text(
+                        "Annuleren",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
+                ),
+                InputWidget(
+                  isEditing: isEditing,
+                  question: widget.editingQuestion!,
+                  answer: widget.editingAnswer,
+                  reloadData: _handleAnswer,
+                  updateKeyboardVisibility: (bool isVisible) {
+                    setState(() {});
+                  },
+                ),
+              ],
+            );
+          } else if (allAnswered) {
             return const CompletionCard();
           } else if (nextQuestion == null) {
             return ElevatedButton(
@@ -109,6 +171,7 @@ class _InputContainerState extends State<InputContainer> {
             );
           } else {
             return InputWidget(
+              isEditing: false,
               question: nextQuestion,
               reloadData: _handleAnswer,
               updateKeyboardVisibility: (bool isVisible) {

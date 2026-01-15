@@ -37,8 +37,13 @@ class _TreeNewState extends State<TreeNew> {
   int? _targetState;
   bool _isPlayingTransition = false;
   bool _initialImageLoaded = false;
+
   VideoPlayerController? _activeTransitionController;
   bool allQuestionsAnswered = false;
+
+  // Edit State
+  Question? _editingQuestion;
+  Answer? _editingAnswer;
   AvatarConfiguration _avatarConfig = const AvatarConfiguration();
   bool _showAvatarTooltip = false;
   final AvatarTooltipController _avatarController = AvatarTooltipController();
@@ -104,6 +109,9 @@ class _TreeNewState extends State<TreeNew> {
   }
 
   Future<void> _updateTreeState(int newState) async {
+    if (_editingQuestion != null) {
+      _cancelEdit();
+    }
     if (_isPlayingTransition) return;
     if (newState < TreeConstants.minTreeState || newState > TreeConstants.maxTreeState) return;
 
@@ -147,6 +155,13 @@ class _TreeNewState extends State<TreeNew> {
         });
       }
     }
+  }
+
+  void _cancelEdit() {
+    setState(() {
+      _editingQuestion = null;
+      _editingAnswer = null;
+    });
   }
 
   @override
@@ -223,6 +238,12 @@ class _TreeNewState extends State<TreeNew> {
                           child: ChatBubbleConstructor(
                             questionAnswerMap: treeParts![_currentState].questionAnswerMap,
                             scrollController: _chatScrollController,
+                            onEditAnswer: (question, answer) {
+                              setState(() {
+                                _editingQuestion = question;
+                                _editingAnswer = answer;
+                              });
+                            },
                           ),
                         ),
                       ),
@@ -232,6 +253,9 @@ class _TreeNewState extends State<TreeNew> {
                         treeParts: treeParts!,
                         currentState: _currentState,
                         inputLogic: _inputLogic,
+                        editingQuestion: _editingQuestion,
+                        editingAnswer: _editingAnswer,
+                        onCancelEdit: _cancelEdit,
                         onTreeUpdate: (newParts) {
                           setState(() {
                             treeParts = newParts;
