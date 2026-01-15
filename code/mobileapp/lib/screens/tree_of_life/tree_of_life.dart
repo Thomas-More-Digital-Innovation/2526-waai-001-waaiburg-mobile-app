@@ -193,7 +193,7 @@ class _TreeOfLifeState extends State<TreeOfLife> {
               Icons.home_rounded,
               weight: 0.9,
             ),
-            iconSize: 56,
+            iconSize: 48,
             onPressed: () => Navigator.of(context).pop(),
           ),
           actions: [
