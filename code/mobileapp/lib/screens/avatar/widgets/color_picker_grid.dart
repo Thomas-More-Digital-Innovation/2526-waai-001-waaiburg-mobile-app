@@ -16,6 +16,8 @@ class ColorPickerGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      physics: const NeverScrollableScrollPhysics(), // Disable internal scrolling
+      shrinkWrap: true, // Allow grid to size itself
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,
