@@ -32,7 +32,7 @@ class _TreeNewState extends State<TreeNew> {
   List<TreePart>? treeParts;
   Map<int, List<Question>>? questionsMap;
   List<Answer>? answersList;
-  int currentQuestionIndex = 0;
+  int _nextTransitionableState = 0;
   int _currentState = 0;
   int? _targetState;
   bool _isPlayingTransition = false;
@@ -92,6 +92,7 @@ class _TreeNewState extends State<TreeNew> {
       unasweredTreePartIndex = maxTreeState;
     }
     _currentState = unasweredTreePartIndex;
+    _nextTransitionableState = unasweredTreePartIndex + 1;
 
     // Precache the first background image before showing UI
     if (mounted && treeParts != null && treeParts!.isNotEmpty) {
@@ -108,16 +109,17 @@ class _TreeNewState extends State<TreeNew> {
 
     final controller = _videoControllers[newState];
     if (controller != null) {
-      // Setup transition
-      _activeTransitionController = controller;
-      await controller.seekTo(Duration.zero);
-
       if (mounted) {
+        final bool shouldPlayAnimation = newState >= _nextTransitionableState && !allQuestionsAnswered;
+
         setState(() {
-          _isPlayingTransition = true;
+          _isPlayingTransition = shouldPlayAnimation;
           _targetState = newState;
         });
-        if (newState > _currentState && !allQuestionsAnswered) {
+
+        if (shouldPlayAnimation) {
+          _activeTransitionController = controller;
+          await controller.seekTo(Duration.zero);
           await controller.play();
           await Future.delayed(controller.value.duration);
         }
@@ -126,6 +128,9 @@ class _TreeNewState extends State<TreeNew> {
           setState(() {
             _currentState = newState;
             _isPlayingTransition = false;
+            if (newState + 1 > _nextTransitionableState) {
+              _nextTransitionableState = newState + 1;
+            }
             _targetState = null;
             _activeTransitionController = null;
           });
@@ -136,6 +141,9 @@ class _TreeNewState extends State<TreeNew> {
       if (mounted) {
         setState(() {
           _currentState = newState;
+          if (newState + 1 > _nextTransitionableState) {
+            _nextTransitionableState = newState + 1;
+          }
         });
       }
     }
@@ -195,15 +203,15 @@ class _TreeNewState extends State<TreeNew> {
               targetState: _targetState,
               isPlayingTransition: _isPlayingTransition,
             ),
-            if (!_isPlayingTransition) ...[
-              Positioned(
-                right: -50,
-                bottom: 90,
-                child: AvatarWidget(
-                  config: _avatarConfig,
-                  size: 250,
-                ),
+            Positioned(
+              right: -50,
+              bottom: 90,
+              child: AvatarWidget(
+                config: _avatarConfig,
+                size: 250,
               ),
+            ),
+            if (!_isPlayingTransition) ...[
               Positioned.fill(
                 child: Column(
                   children: [
