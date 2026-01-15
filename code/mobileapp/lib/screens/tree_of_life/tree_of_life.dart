@@ -30,7 +30,7 @@ class _TreeOfLifeState extends State<TreeOfLife> {
   List<TreePart>? treeParts;
   Map<int, List<Question>>? questionsMap;
   List<Answer>? answersList;
-  int _nextTransitionableState = 0;
+  int _nextTransitionalState = 0;
   int _currentState = 0;
   int? _targetState;
   bool _isPlayingTransition = false;
@@ -86,16 +86,16 @@ class _TreeOfLifeState extends State<TreeOfLife> {
   }
 
   Future<void> initTree() async {
-    int? unasweredTreePartIndex = getUnansweredTreePart(treeParts!);
+    int? unansweredTreePartIndex = getUnansweredTreePart(treeParts!);
 
-    if (unasweredTreePartIndex == null) {
+    if (unansweredTreePartIndex == null) {
       setState(() {
         allQuestionsAnswered = true;
       });
-      unasweredTreePartIndex = maxTreeState;
+      unansweredTreePartIndex = maxTreeState;
     }
-    _currentState = unasweredTreePartIndex;
-    _nextTransitionableState = unasweredTreePartIndex + 1;
+    _currentState = unansweredTreePartIndex;
+    _nextTransitionalState = unansweredTreePartIndex + 1;
 
     // Precache the first background image before showing UI
     if (mounted && treeParts != null && treeParts!.isNotEmpty) {
@@ -116,7 +116,7 @@ class _TreeOfLifeState extends State<TreeOfLife> {
     final controller = _videoControllers[newState];
     if (controller != null) {
       if (mounted) {
-        final bool shouldPlayAnimation = newState >= _nextTransitionableState && !allQuestionsAnswered;
+        final bool shouldPlayAnimation = newState >= _nextTransitionalState && !allQuestionsAnswered;
 
         setState(() {
           _isPlayingTransition = shouldPlayAnimation;
@@ -134,8 +134,8 @@ class _TreeOfLifeState extends State<TreeOfLife> {
           setState(() {
             _currentState = newState;
             _isPlayingTransition = false;
-            if (newState + 1 > _nextTransitionableState) {
-              _nextTransitionableState = newState + 1;
+            if (newState + 1 > _nextTransitionalState) {
+              _nextTransitionalState = newState + 1;
             }
             _targetState = null;
             _activeTransitionController = null;
@@ -147,8 +147,8 @@ class _TreeOfLifeState extends State<TreeOfLife> {
       if (mounted) {
         setState(() {
           _currentState = newState;
-          if (newState + 1 > _nextTransitionableState) {
-            _nextTransitionableState = newState + 1;
+          if (newState + 1 > _nextTransitionalState) {
+            _nextTransitionalState = newState + 1;
           }
         });
       }

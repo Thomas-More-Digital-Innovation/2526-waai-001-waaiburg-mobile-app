@@ -25,7 +25,7 @@ class ColorPickerGrid extends StatelessWidget {
       itemCount: colors.length,
       itemBuilder: (context, index) {
         final color = colors[index];
-        final isSelected = color.value == currentColor.value;
+        final isSelected = color.toARGB32() == currentColor.toARGB32();
 
         return GestureDetector(
           onTap: () => onColorSelected(color),
@@ -34,9 +34,7 @@ class ColorPickerGrid extends StatelessWidget {
               color: color,
               shape: BoxShape.circle,
               border: Border.all(
-                color: isSelected
-                    ? Theme.of(context).colorScheme.secondary
-                    : Colors.grey,
+                color: isSelected ? Theme.of(context).colorScheme.secondary : Colors.grey,
                 width: isSelected ? 4 : 2,
               ),
               boxShadow: [
