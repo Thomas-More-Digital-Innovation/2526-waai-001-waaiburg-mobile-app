@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/screens/tree/tree_constants.dart';
+import 'package:mobileapp/screens/tree_of_life/tree_constants.dart';
 import 'package:mobileapp/screens/tree_of_life/widgets/video_player.dart';
 import 'package:video_player/video_player.dart';
 
