@@ -19,8 +19,6 @@ import 'package:mobileapp/screens/tree_refactor/logic/input_logic.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
-// TODO: remove animations when looking back to a previous question
-
 class TreeNew extends StatefulWidget {
   const TreeNew({super.key});
 
@@ -303,27 +301,6 @@ class _TreeNewState extends State<TreeNew> {
                       _showAvatarTooltip = false;
                     });
                   },
-                ),
-              // TODO: debug
-              if (!_showAvatarTooltip)
-                Positioned(
-                  right: 0,
-                  top: 100,
-                  child: IconButton(
-                    style: IconButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(80),
-                      foregroundColor: Theme.of(context).colorScheme.surface.withAlpha(140),
-                    ),
-                    onPressed: () async {
-                      await _avatarController.debugResetTooltip();
-                      if (context.mounted) {
-                        setState(() {
-                          _showAvatarTooltip = true;
-                        });
-                      }
-                    },
-                    icon: const Icon(Icons.restore),
-                  ),
                 ),
             ],
           ],
