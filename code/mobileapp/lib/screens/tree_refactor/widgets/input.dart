@@ -132,6 +132,7 @@ class _InputWidgetState extends State<InputWidget> {
                   child: TextField(
                     focusNode: _focusNode,
                     controller: _textController,
+                    onChanged: (value) => setState(() {}),
                     decoration: const InputDecoration.collapsed(
                       hintText: 'Typ je antwoord...',
                     ),
@@ -140,6 +141,11 @@ class _InputWidgetState extends State<InputWidget> {
                 IconButton(
                   icon: Icon(widget.isEditing ? Icons.save : Icons.send),
                   onPressed: _handleSendAnswer,
+                  color: _textController.text.isEmpty
+                      ? Colors.grey
+                      : widget.isEditing
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.secondary,
                 ),
               ],
             ),
