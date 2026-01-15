@@ -163,6 +163,7 @@ class _TreeNewState extends State<TreeNew> {
       },
       behavior: HitTestBehavior.translucent,
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -213,34 +214,37 @@ class _TreeNewState extends State<TreeNew> {
             ),
             if (!_isPlayingTransition) ...[
               Positioned.fill(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: SafeArea(
-                        child: ChatBubbleConstructor(
-                          questionAnswerMap: treeParts![_currentState].questionAnswerMap,
-                          scrollController: _chatScrollController,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: SafeArea(
+                          child: ChatBubbleConstructor(
+                            questionAnswerMap: treeParts![_currentState].questionAnswerMap,
+                            scrollController: _chatScrollController,
+                          ),
                         ),
                       ),
-                    ),
-                    InputContainer(
-                      chatScrollController: _chatScrollController,
-                      onContinue: () => _updateTreeState(_currentState + 1),
-                      treeParts: treeParts!,
-                      currentState: _currentState,
-                      inputLogic: _inputLogic,
-                      onTreeUpdate: (newParts) {
-                        setState(() {
-                          treeParts = newParts;
-                        });
-                      },
-                      onAllQuestionsAnswered: (isAllAnswered) {
-                        setState(() {
-                          allQuestionsAnswered = isAllAnswered;
-                        });
-                      },
-                    ),
-                  ],
+                      InputContainer(
+                        chatScrollController: _chatScrollController,
+                        onContinue: () => _updateTreeState(_currentState + 1),
+                        treeParts: treeParts!,
+                        currentState: _currentState,
+                        inputLogic: _inputLogic,
+                        onTreeUpdate: (newParts) {
+                          setState(() {
+                            treeParts = newParts;
+                          });
+                        },
+                        onAllQuestionsAnswered: (isAllAnswered) {
+                          setState(() {
+                            allQuestionsAnswered = isAllAnswered;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
               // next button
