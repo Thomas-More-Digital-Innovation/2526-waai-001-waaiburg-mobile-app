@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:mobileapp/screens/avatar/avatar_customization_screen.dart';
 import 'package:mobileapp/screens/home/home.dart';
 import 'package:mobileapp/screens/login/login_page.dart';
 import 'package:mobileapp/screens/info_content_select.dart';
@@ -88,5 +89,9 @@ final GoRouter appRouter = GoRouter(
         return InfoContentSelected(infoId: infoId, title: title);
       },
     ),
+    GoRoute(
+      path: AppRoutes.avatar,
+      builder: (context, state) => const AvatarCustomizationScreen(),
+    )
   ],
 );
