@@ -10,7 +10,7 @@ import 'package:mobileapp/screens/tree_of_life/tree_part.dart';
 import 'package:mobileapp/screens/tree_of_life/widgets/avatar_icon.dart';
 import 'package:mobileapp/screens/tree_of_life/widgets/chat_bubble_constructor.dart';
 import 'package:mobileapp/screens/tree_of_life/widgets/background.dart';
-import 'package:mobileapp/screens/tree/tree_constants.dart';
+import 'package:mobileapp/screens/tree_of_life/tree_constants.dart';
 import 'package:mobileapp/screens/tree_of_life/widgets/input_container.dart';
 import 'package:mobileapp/screens/tree_of_life/widgets/tree_loading.dart';
 import 'package:mobileapp/screens/tree_of_life/widgets/avatar_tooltip.dart';
