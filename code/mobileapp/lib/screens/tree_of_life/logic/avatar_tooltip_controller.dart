@@ -13,10 +13,4 @@ class AvatarTooltipController {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_prefsKey, true);
   }
-
-  // TODO: remove when done testing.
-  Future<void> debugResetTooltip() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_prefsKey);
-  }
 }

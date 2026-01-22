@@ -6,39 +6,42 @@ import 'package:mobileapp/model/avatar_configuration.dart';
 import 'package:mobileapp/model/qna.dart';
 import 'package:mobileapp/model/tree_part.dart';
 import 'package:mobileapp/screens/avatar/widgets/avatar_widget.dart';
-import 'package:mobileapp/screens/tree_refactor/tree_part.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/avatar_icon.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/chat_bubble_constructor.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/background.dart';
-import 'package:mobileapp/screens/tree/tree_constants.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/input_container.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/tree_loading.dart';
-import 'package:mobileapp/screens/tree_refactor/widgets/avatar_tooltip.dart';
-import 'package:mobileapp/screens/tree_refactor/logic/avatar_tooltip_controller.dart';
-import 'package:mobileapp/screens/tree_refactor/logic/input_logic.dart';
+import 'package:mobileapp/screens/tree_of_life/tree_part.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/avatar_icon.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/chat_bubble_constructor.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/background.dart';
+import 'package:mobileapp/screens/tree_of_life/tree_constants.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/input_container.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/tree_loading.dart';
+import 'package:mobileapp/screens/tree_of_life/widgets/avatar_tooltip.dart';
+import 'package:mobileapp/screens/tree_of_life/logic/avatar_tooltip_controller.dart';
+import 'package:mobileapp/screens/tree_of_life/logic/input_logic.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
-// TODO: remove animations when looking back to a previous question
-
-class TreeNew extends StatefulWidget {
-  const TreeNew({super.key});
+class TreeOfLife extends StatefulWidget {
+  const TreeOfLife({super.key});
 
   @override
-  State<TreeNew> createState() => _TreeNewState();
+  State<TreeOfLife> createState() => _TreeOfLifeState();
 }
 
-class _TreeNewState extends State<TreeNew> {
+class _TreeOfLifeState extends State<TreeOfLife> {
   List<TreePart>? treeParts;
   Map<int, List<Question>>? questionsMap;
   List<Answer>? answersList;
-  int currentQuestionIndex = 0;
+  int _nextTransitionalState = 0;
   int _currentState = 0;
   int? _targetState;
   bool _isPlayingTransition = false;
   bool _initialImageLoaded = false;
+
   VideoPlayerController? _activeTransitionController;
   bool allQuestionsAnswered = false;
+
+  // Edit State
+  Question? _editingQuestion;
+  Answer? _editingAnswer;
   AvatarConfiguration _avatarConfig = const AvatarConfiguration();
   bool _showAvatarTooltip = false;
   final AvatarTooltipController _avatarController = AvatarTooltipController();
@@ -83,15 +86,16 @@ class _TreeNewState extends State<TreeNew> {
   }
 
   Future<void> initTree() async {
-    int? unasweredTreePartIndex = getUnansweredTreePart(treeParts!);
+    int? unansweredTreePartIndex = getUnansweredTreePart(treeParts!);
 
-    if (unasweredTreePartIndex == null) {
+    if (unansweredTreePartIndex == null) {
       setState(() {
         allQuestionsAnswered = true;
       });
-      unasweredTreePartIndex = maxTreeState;
+      unansweredTreePartIndex = maxTreeState;
     }
-    _currentState = unasweredTreePartIndex;
+    _currentState = unansweredTreePartIndex;
+    _nextTransitionalState = unansweredTreePartIndex + 1;
 
     // Precache the first background image before showing UI
     if (mounted && treeParts != null && treeParts!.isNotEmpty) {
@@ -103,21 +107,25 @@ class _TreeNewState extends State<TreeNew> {
   }
 
   Future<void> _updateTreeState(int newState) async {
+    if (_editingQuestion != null) {
+      _cancelEdit();
+    }
     if (_isPlayingTransition) return;
     if (newState < TreeConstants.minTreeState || newState > TreeConstants.maxTreeState) return;
 
     final controller = _videoControllers[newState];
     if (controller != null) {
-      // Setup transition
-      _activeTransitionController = controller;
-      await controller.seekTo(Duration.zero);
-
       if (mounted) {
+        final bool shouldPlayAnimation = newState >= _nextTransitionalState && !allQuestionsAnswered;
+
         setState(() {
-          _isPlayingTransition = true;
+          _isPlayingTransition = shouldPlayAnimation;
           _targetState = newState;
         });
-        if (newState > _currentState && !allQuestionsAnswered) {
+
+        if (shouldPlayAnimation) {
+          _activeTransitionController = controller;
+          await controller.seekTo(Duration.zero);
           await controller.play();
           await Future.delayed(controller.value.duration);
         }
@@ -126,6 +134,9 @@ class _TreeNewState extends State<TreeNew> {
           setState(() {
             _currentState = newState;
             _isPlayingTransition = false;
+            if (newState + 1 > _nextTransitionalState) {
+              _nextTransitionalState = newState + 1;
+            }
             _targetState = null;
             _activeTransitionController = null;
           });
@@ -136,9 +147,19 @@ class _TreeNewState extends State<TreeNew> {
       if (mounted) {
         setState(() {
           _currentState = newState;
+          if (newState + 1 > _nextTransitionalState) {
+            _nextTransitionalState = newState + 1;
+          }
         });
       }
     }
+  }
+
+  void _cancelEdit() {
+    setState(() {
+      _editingQuestion = null;
+      _editingAnswer = null;
+    });
   }
 
   @override
@@ -155,6 +176,7 @@ class _TreeNewState extends State<TreeNew> {
       },
       behavior: HitTestBehavior.translucent,
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -171,7 +193,7 @@ class _TreeNewState extends State<TreeNew> {
               Icons.home_rounded,
               weight: 0.9,
             ),
-            iconSize: 56,
+            iconSize: 48,
             onPressed: () => Navigator.of(context).pop(),
           ),
           actions: [
@@ -195,44 +217,56 @@ class _TreeNewState extends State<TreeNew> {
               targetState: _targetState,
               isPlayingTransition: _isPlayingTransition,
             ),
-            if (!_isPlayingTransition) ...[
-              Positioned(
-                right: -50,
-                bottom: 90,
-                child: AvatarWidget(
-                  config: _avatarConfig,
-                  size: 250,
-                ),
+            Positioned(
+              right: -50,
+              bottom: 90,
+              child: AvatarWidget(
+                config: _avatarConfig,
+                size: 250,
               ),
+            ),
+            if (!_isPlayingTransition) ...[
               Positioned.fill(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: SafeArea(
-                        child: ChatBubbleConstructor(
-                          questionAnswerMap: treeParts![_currentState].questionAnswerMap,
-                          scrollController: _chatScrollController,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: SafeArea(
+                          child: ChatBubbleConstructor(
+                            questionAnswerMap: treeParts![_currentState].questionAnswerMap,
+                            scrollController: _chatScrollController,
+                            onEditAnswer: (question, answer) {
+                              setState(() {
+                                _editingQuestion = question;
+                                _editingAnswer = answer;
+                              });
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                    InputContainer(
-                      chatScrollController: _chatScrollController,
-                      onContinue: () => _updateTreeState(_currentState + 1),
-                      treeParts: treeParts!,
-                      currentState: _currentState,
-                      inputLogic: _inputLogic,
-                      onTreeUpdate: (newParts) {
-                        setState(() {
-                          treeParts = newParts;
-                        });
-                      },
-                      onAllQuestionsAnswered: (isAllAnswered) {
-                        setState(() {
-                          allQuestionsAnswered = isAllAnswered;
-                        });
-                      },
-                    ),
-                  ],
+                      InputContainer(
+                        chatScrollController: _chatScrollController,
+                        onContinue: () => _updateTreeState(_currentState + 1),
+                        treeParts: treeParts!,
+                        currentState: _currentState,
+                        inputLogic: _inputLogic,
+                        editingQuestion: _editingQuestion,
+                        editingAnswer: _editingAnswer,
+                        onCancelEdit: _cancelEdit,
+                        onTreeUpdate: (newParts) {
+                          setState(() {
+                            treeParts = newParts;
+                          });
+                        },
+                        onAllQuestionsAnswered: (isAllAnswered) {
+                          setState(() {
+                            allQuestionsAnswered = isAllAnswered;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
               // next button
@@ -267,27 +301,6 @@ class _TreeNewState extends State<TreeNew> {
                       _showAvatarTooltip = false;
                     });
                   },
-                ),
-              // TODO: debug
-              if (!_showAvatarTooltip)
-                Positioned(
-                  right: 0,
-                  top: 100,
-                  child: IconButton(
-                    style: IconButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(80),
-                      foregroundColor: Theme.of(context).colorScheme.surface.withAlpha(140),
-                    ),
-                    onPressed: () async {
-                      await _avatarController.debugResetTooltip();
-                      if (context.mounted) {
-                        setState(() {
-                          _showAvatarTooltip = true;
-                        });
-                      }
-                    },
-                    icon: const Icon(Icons.restore),
-                  ),
                 ),
             ],
           ],

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobileapp/config/routes.dart';
 import 'package:mobileapp/screens/home/widgets/home_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mobileapp/screens/home/widgets/logout_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<bool> isLoggedIn() async {
@@ -120,14 +120,7 @@ class _HomeState extends State<Home> {
                         icon: FontAwesomeIcons.tree,
                         iconColor: Theme.of(context).colorScheme.secondary,
                         sectionId: 0,
-                        route: AppRoutes.treeHome,
-                      ),
-                      HomeButton(
-                        name: "MIJN AVATAR",
-                        icon: FontAwesomeIcons.faceSmile,
-                        iconColor: Theme.of(context).colorScheme.secondary,
-                        sectionId: 0,
-                        route: AppRoutes.avatar,
+                        route: AppRoutes.treeOfLife,
                       ),
                       HomeButton(
                         name: "GEGEVENS",
@@ -135,13 +128,6 @@ class _HomeState extends State<Home> {
                         iconColor: Theme.of(context).colorScheme.primaryContainer,
                         sectionId: 0,
                         route: AppRoutes.userDetails,
-                      ),
-                      HomeButton(
-                        name: "test",
-                        icon: FontAwesomeIcons.tree,
-                        iconColor: Theme.of(context).colorScheme.primaryContainer,
-                        sectionId: 0,
-                        route: AppRoutes.treeNew,
                       ),
                     ],
                   ],
@@ -162,7 +148,9 @@ class _HomeState extends State<Home> {
                   ),
                   onPressed: () async {
                     if (userLoggedIn) {
-                      logOut();
+                      if (await showLogoutDialog(context)) {
+                        logOut();
+                      }
                     } else {
                       // Push the login page and wait for a result; if true is returned, reload login state
                       final result = await context.push(AppRoutes.login);

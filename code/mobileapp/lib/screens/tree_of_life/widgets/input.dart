@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:mobileapp/api/answer.dart';
 import 'package:mobileapp/model/qna.dart';
-import 'package:mobileapp/screens/tree/widgets/bubble_clipper.dart';
 
 class InputWidget extends StatefulWidget {
   final Answer? answer;
   final Question question;
   final Function(Question question, String answerText) reloadData;
   final Function(bool) updateKeyboardVisibility;
+  final bool isEditing;
 
   const InputWidget({
     super.key,
@@ -16,6 +16,7 @@ class InputWidget extends StatefulWidget {
     required this.question,
     required this.reloadData,
     required this.updateKeyboardVisibility,
+    required this.isEditing,
   });
 
   @override
@@ -32,6 +33,31 @@ class _InputWidgetState extends State<InputWidget> {
     _focusNode.addListener(_onFocusChange);
     if (widget.answer != null) {
       _textController.text = widget.answer!.answer;
+    }
+
+    if (widget.isEditing) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _focusNode.requestFocus();
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(InputWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.answer != oldWidget.answer) {
+      if (widget.answer != null) {
+        _textController.text = widget.answer!.answer;
+      } else {
+        _textController.clear();
+      }
+    }
+
+    // Auto-focus when entering edit mode or changing the answer being edited
+    if (widget.isEditing && (!oldWidget.isEditing || widget.answer != oldWidget.answer)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _focusNode.requestFocus();
+      });
     }
   }
 
@@ -89,28 +115,39 @@ class _InputWidgetState extends State<InputWidget> {
 
         return SizedBox(
           height: 50,
-          child: ClipPath(
-            clipper: BubbleClipper(),
-            child: Container(
+          child: Container(
+            decoration: BoxDecoration(
               color: Colors.white,
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      focusNode: _focusNode,
-                      controller: _textController,
-                      decoration: const InputDecoration.collapsed(
-                        hintText: 'Typ je antwoord...',
-                      ),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(widget.isEditing ? 0.0 : 12.0),
+                topRight: Radius.circular(12.0),
+                bottomLeft: Radius.circular(12.0),
+                bottomRight: Radius.circular(12.0),
+              ),
+            ),
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    focusNode: _focusNode,
+                    controller: _textController,
+                    onChanged: (value) => setState(() {}),
+                    decoration: const InputDecoration.collapsed(
+                      hintText: 'Typ je antwoord...',
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.send),
-                    onPressed: _handleSendAnswer,
-                  ),
-                ],
-              ),
+                ),
+                IconButton(
+                  icon: Icon(widget.isEditing ? Icons.save : Icons.send),
+                  onPressed: _handleSendAnswer,
+                  color: _textController.text.isEmpty
+                      ? Colors.grey
+                      : widget.isEditing
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.secondary,
+                ),
+              ],
             ),
           ),
         );
