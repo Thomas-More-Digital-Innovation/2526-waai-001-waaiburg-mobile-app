@@ -3,7 +3,7 @@ class AvatarConfiguration {
   final int bodyType;
   final int shirtId;
   final int pantsId;
-  final int? shoesId;
+  final int shoesId;
   final String skinColor;
   final String shirtColor;
   final String pantsColor;
@@ -14,7 +14,7 @@ class AvatarConfiguration {
     this.bodyType = 0,
     this.shirtId = 0,
     this.pantsId = 0,
-    this.shoesId,
+    this.shoesId = 0,
     this.skinColor = '#FFD7B5', // Default skin color
     this.shirtColor = '#4A90E2', // Default blue shirt
     this.pantsColor = '#2C3E50', // Default dark pants
@@ -27,7 +27,7 @@ class AvatarConfiguration {
       bodyType: json['bodyType'] ?? 0,
       shirtId: json['shirtId'] ?? 0,
       pantsId: json['pantsId'] ?? 0,
-      shoesId: json['shoesId'],
+      shoesId: json['shoesId'] ?? 0,
       skinColor: json['skinColor'] ?? '#FFD7B5',
       shirtColor: json['shirtColor'] ?? '#4A90E2',
       pantsColor: json['pantsColor'] ?? '#2C3E50',

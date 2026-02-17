@@ -41,21 +41,20 @@ class AvatarWidget extends StatelessWidget {
               ColorUtils.hexToColor(config.skinColor),
             ),
           ),
-          // Shoes (optional)
-          if (config.shoesId != null)
-            Positioned(
-              top: size * 0.59, // Position at the bottom for feet
-              left: size * 0.335, // Center horizontally
-              child: SizedBox(
-                width: size * 0.33, // Smaller width for shoes
-                height: size * 0.33, // Smaller height for shoes
-                child: _buildBodyPart(
-                  'shoes',
-                  config.shoesId!,
-                  ColorUtils.hexToColor(config.shoesColor),
-                ),
+          // Shoes
+          Positioned(
+            top: size * 0.59, // Position at the bottom for feet
+            left: size * 0.335, // Center horizontally
+            child: SizedBox(
+              width: size * 0.33, // Smaller width for shoes
+              height: size * 0.33, // Smaller height for shoes
+              child: _buildBodyPart(
+                'shoes',
+                config.shoesId,
+                ColorUtils.hexToColor(config.shoesColor),
               ),
             ),
+          ),
           // Pants
           Positioned(
             top: size * 0.56, // Verplaats naar beneden (35% van totale hoogte)

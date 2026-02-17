@@ -306,7 +306,7 @@ class AvatarOptionsGrid extends StatelessWidget {
       case 4:
         return _StyleAndColorSection(
           styleCount: AvatarCustomizationData.shoesStyleCount,
-          currentStyle: currentConfig.shoesId ?? 0,
+          currentStyle: currentConfig.shoesId,
           onStyleSelected: onShoesStyleUpdate,
           labels: AvatarCustomizationData.shoesLabels,
           partType: 'shoes',
