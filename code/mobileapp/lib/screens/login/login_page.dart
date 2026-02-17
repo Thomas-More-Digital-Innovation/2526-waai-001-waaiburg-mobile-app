@@ -21,6 +21,7 @@ class _MyWidgetState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool failedLogin = false;
+  bool _showPassword = false;
 
   void login(String email, String password) async {
     try {
@@ -65,7 +66,6 @@ class _MyWidgetState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: false,
-      // resizeToAvoidBottomInset: false,
       appBar: const Header(
         title: Text('Login'),
       ),
@@ -81,7 +81,9 @@ class _MyWidgetState extends State<LoginPage> {
                 Container(
                   margin: const EdgeInsets.all(5.0),
                   padding: const EdgeInsets.all(15.0),
-                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.error, borderRadius: const BorderRadius.all(Radius.circular(30))),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.error,
+                      borderRadius: const BorderRadius.all(Radius.circular(30))),
                   child: Text(
                     'Email of wachtwoord incorrect',
                     style: TextStyle(color: Theme.of(context).colorScheme.onError, fontWeight: FontWeight.bold),
@@ -97,38 +99,51 @@ class _MyWidgetState extends State<LoginPage> {
               ),
               TextField(
                 controller: passwordController,
-                decoration: const InputDecoration(hintText: 'Password'),
-                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: 'Password',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _showPassword ? Icons.visibility : Icons.visibility_off,
+                      color: _showPassword ? Colors.blue : Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() => _showPassword = !_showPassword);
+                    },
+                  ),
+                ),
+                obscureText: !_showPassword,
+                enableSuggestions: false,
+                autocorrect: false,
               ),
               const SizedBox(
                 height: 40,
               ),
-              GestureDetector(
-                onTap: () {
-                  login(emailController.text.toString(), passwordController.text.toString());
-                },
-                child: Container(
-                  height: 50,
-                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.secondaryContainer, borderRadius: BorderRadius.circular(10)),
-                  child: const Center(
-                    child: Text('Login'),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    login(emailController.text.toString(), passwordController.text.toString());
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                    foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
+                  child: const Text('Login'),
                 ),
               ),
               const SizedBox(
-                height: 20,
+                height: 8,
               ),
-              Container(
-                alignment: Alignment.centerRight,
-                child: GestureDetector(
-                  onTap: () {
-                    launchUrl(Uri.parse(forgotPasswordUrl));
-                  },
-                  child: Text(
-                    'Wachtwoord vergeten?',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary),
-                  ),
-                ),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                    onPressed: () {
+                      launchUrl(Uri.parse(forgotPasswordUrl));
+                    },
+                    child: Text('Wachtwoord vergeten?')),
               ),
             ],
           ),
