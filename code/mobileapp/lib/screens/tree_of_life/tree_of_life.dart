@@ -168,7 +168,8 @@ class _TreeOfLifeState extends State<TreeOfLife> {
     if (treeParts == null || !_initialImageLoaded) return const TreeLoadingWidget();
 
     int? unansweredTreePartIndex = getUnansweredTreePart(treeParts!);
-    bool isUnansweredTreePart = (!allQuestionsAnswered && unansweredTreePartIndex != null && unansweredTreePartIndex <= _currentState);
+    bool isUnansweredTreePart =
+        (!allQuestionsAnswered && unansweredTreePartIndex != null && unansweredTreePartIndex <= _currentState);
 
     return GestureDetector(
       onTap: () {
@@ -229,10 +230,10 @@ class _TreeOfLifeState extends State<TreeOfLife> {
               Positioned.fill(
                 child: Padding(
                   padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: SafeArea(
+                  child: SafeArea(
+                    child: Column(
+                      children: [
+                        Expanded(
                           child: ChatBubbleConstructor(
                             questionAnswerMap: treeParts![_currentState].questionAnswerMap,
                             scrollController: _chatScrollController,
@@ -244,28 +245,28 @@ class _TreeOfLifeState extends State<TreeOfLife> {
                             },
                           ),
                         ),
-                      ),
-                      InputContainer(
-                        chatScrollController: _chatScrollController,
-                        onContinue: () => _updateTreeState(_currentState + 1),
-                        treeParts: treeParts!,
-                        currentState: _currentState,
-                        inputLogic: _inputLogic,
-                        editingQuestion: _editingQuestion,
-                        editingAnswer: _editingAnswer,
-                        onCancelEdit: _cancelEdit,
-                        onTreeUpdate: (newParts) {
-                          setState(() {
-                            treeParts = newParts;
-                          });
-                        },
-                        onAllQuestionsAnswered: (isAllAnswered) {
-                          setState(() {
-                            allQuestionsAnswered = isAllAnswered;
-                          });
-                        },
-                      ),
-                    ],
+                        InputContainer(
+                          chatScrollController: _chatScrollController,
+                          onContinue: () => _updateTreeState(_currentState + 1),
+                          treeParts: treeParts!,
+                          currentState: _currentState,
+                          inputLogic: _inputLogic,
+                          editingQuestion: _editingQuestion,
+                          editingAnswer: _editingAnswer,
+                          onCancelEdit: _cancelEdit,
+                          onTreeUpdate: (newParts) {
+                            setState(() {
+                              treeParts = newParts;
+                            });
+                          },
+                          onAllQuestionsAnswered: (isAllAnswered) {
+                            setState(() {
+                              allQuestionsAnswered = isAllAnswered;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
