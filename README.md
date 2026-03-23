@@ -27,3 +27,9 @@ For instructions on how to build and upload the app to the Play Store and App St
 ## Notes from the previous developer
 
 If you ever update Flutter, make sure the minSdk is updated in [android/app/build.gradle](./code/mobileapp/android/app/build.gradle) to the newest version. If you don't do this, the Google Play Console will complain about it and won't let you upload the new version.
+
+---
+
+<img src="documents/files/appicons/appstore.png" width="200" height="200">
+
+> Stay cool, Stay open-source
