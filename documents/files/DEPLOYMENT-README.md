@@ -19,7 +19,7 @@ You can find them
 
 ### 0. Add files
 
-Before you can create a release, you need 2 files that can be found in the Google Drive in the account from De Waaiburg App. Again ask Ingrid for the password.
+Before you can create a release, you need 2 files that can be found in the Google Drive in the account from De Waaiburg App under the folder `developers waaiburg app` (you won't miss it). Again ask Ingrid for the password.
 
 You'll have 2 files: `key.properties` and `upload-keystore.jks`. 
 Place the `key.properties` file in the `android/` folder and the `upload-keystore.jks` file in the `android/app/` folder.
