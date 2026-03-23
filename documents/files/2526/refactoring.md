@@ -27,8 +27,8 @@ De totale grote die opgevraagd word voor elke pagina is 176.67kB (momenteel). Di
 ### Refactoring suggesties
 
 [x] Cache statische content en foto's
-[ ] Update API om id parameter toe te voegen aan infoContent endpoint
-[ ] InfoContent endpoint endpoint zonder id parameter standaard niet de content mee te geven, aangezien content de meeste data bevat. Deze zou dan opgevraagd worden met de parameter.
+[x] Update API om id parameter toe te voegen aan infoContent endpoint
+[x] InfoContent endpoint endpoint zonder id parameter standaard niet de content mee te geven, aangezien content de meeste data bevat. Deze zou dan opgevraagd worden met de parameter.
 
 ## Private deel
 
